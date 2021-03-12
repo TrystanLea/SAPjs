@@ -1,0 +1,171 @@
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script type="text/javascript" src="openBEM/datasets.js"></script>
+<script type="text/javascript" src="openBEM/openBEM.js"></script>
+<script type="text/javascript" src="topgraphic/ui-mhep.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css?v=2" />
+
+<body>
+  <div class="page">
+    <div class='section'>
+      <div class='section-heading'><b>SAP Calculation</b></div>
+    </div>
+    <div class='section'>
+      <div class="room-elements">
+        <div id="topgraphic"></div>
+      </div>
+    </div>
+    <div id="sap">
+      <div id="heatloss">
+        <div class='section'>
+        
+          <div class='section-heading'><b>Location</b></div>    
+          <div class="room-elements">
+            <table>
+              <tr>
+                <td>Region</td>
+                <td>
+                  <select v-model="data.region" @change="update">
+                    <option v-for="(region,index) in datasets.regions" v-bind:value="index">{{ region }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Altitude</td>
+                <td style="width: 120px;"><input style="width: 60%" v-model.number="data.altitude" @change="update" /><span class="unit">m</span></td>
+              </tr>
+            </table>
+          </div>
+        
+          <div class='section-heading'><b>Overall building dimensions</b></div>
+          <div class="room-elements">
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Area</th>
+                <th>Height</th>
+                <th>Volume</th>
+                <th style="width:20px"></th>
+              </tr>
+              <tr v-for="(floor,index) in data.floors">
+                <td>{{ floor.name }}</td>
+                <td><input style="width:60px" v-model.number="floor.area" @change="update" /> <span class="unit">m2</span></td>
+                <td><input style="width:60px" v-model.number="floor.height" @change="update" /> <span class="unit">m</span></td>
+                <td>{{ floor.volume | toFixed(1) }} <span class="unit">m3</span></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFloor(index)" /></td>
+              </tr>
+              <tr>
+              <td><div style="cursor:pointer" @click="addFloor"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Floor</div></td>
+              </tr>
+            </table>
+
+            <br>
+            <table>
+              <tr><td>Total floor area</td><td style="width: 120px;">{{ data.TFA | toFixed(1) }} <span class="unit">m2</span></td></tr>
+              <tr><td>Total volume</td><td style="width: 120px;">{{ data.volume | toFixed(1) }} <span class="unit">m3</span></td></tr>
+            </table>
+            
+          </div>
+          
+          <div class='section-heading'><b>Occupancy</b></div>    
+          <div class="room-elements">
+            <table>
+              <tr>
+                <td>Floor area based occupancy</td>
+                <td style="width: 120px;">{{ data.sap_occupancy | toFixed(2) }} <span class="unit">people</span></td>
+              </tr>
+              <tr>
+                <td>Use custom occupancy</td>
+                <td>
+                  <input type="checkbox" v-model="data.use_custom_occupancy" @change="update" style="width:auto">
+                </td>
+              </tr>
+              <tr>
+                <td>Custom occupancy</td>
+                <td style="width: 120px;"><input style="width:35px" v-model.number="data.custom_occupancy" @change="update" /><span class="unit">people</span></td>
+              </tr>
+            </table>
+          </div>
+          
+        </div>
+        <div class='section'>
+          <div class='section-heading'><b>Fabric</b></div>
+          <div class="room-elements">
+            <!------------------------------------------------->
+            <table style="width:70%">
+              <tr>
+                <th>Element type</th>
+                <th>Category</th>
+                <th>U-value</th>
+                <th>K-value</th>
+                <th>g</th>
+                <th>gL</th>
+                <th title="Frame factor">ff</th>
+                <th style="width:17px"></th>
+              </tr>
+              <tr v-for="(item,index) in data.fabric.library">
+                <td>{{ index }}</td>
+                <td><select v-model="item.type" @change="update">
+                  <option v-for="item in ['wall','party_wall','floor','loft','window']">{{ item }}</option>
+                </select></td>
+                <td><input style="width:35px" v-model.number="item.uvalue" @change="update" /></td>
+                <td><input style="width:35px" v-model.number="item.kvalue" @change="update" /></td>
+                <td><input style="width:35px" v-model.number="item.g" @change="update" v-if="item.type=='window'" /></td>
+                <td><input style="width:35px" v-model.number="item.gL" @change="update" v-if="item.type=='window'" /></td>
+                <td><input style="width:35px" v-model.number="item.ff" @change="update" v-if="item.type=='window'" /></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" /></td>
+              </tr>
+            </table>
+            
+            <br>
+            <table>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Length</th>
+                <th>Height</th>
+                <th title="Net area (After subtracting windows if applicable)">Area</th>
+                <th title="Subtract window from wall (Windows only)" class="center"><img src="icons/window.png" class="icon" style="padding:0px; width:18px" /></th>
+                <th title="Perimeter (Floors only)" class="center"><img src="icons/perimeter.png" class="icon" style="padding:0px; width:18px" /></th>
+                <th title="Orientation (Windows only)" class="center"><img src="icons/compass2.png" class="icon" style="padding:0px; width:18px" /></th>
+                <th title="Overshading (Windows only)" class="center"><img src="icons/overshading.png" class="icon" style="padding:0px; width:18px" /></th>
+                <th title="U-value">U</th>
+                <th title="Heat loss rate">W/K</th>
+                <th style="width:20px"></th>
+              </tr>
+              <tr v-for="(element,index) in data.fabric.elements">
+                <td><input style="width:120px" v-model="element.id" @change="update" /></td>
+                <td><select v-model="element.lib" @change="update">
+                  <option v-for="(item,key) in data.fabric.library">{{ key }}</option>
+                </select></td>
+                <td><input style="width:35px" v-model.number="element.l" @change="update" /> <span class="unit">m</span></td>
+                <td><input style="width:35px" v-model.number="element.h" @change="update" /> <span class="unit">m</span></td>
+                <td>{{ element.netarea | toFixed(1) }} <span class="unit">m2</span></td>
+                <td><select v-if="element.type=='window'" v-model="element.subtractfrom" @change="update">
+                    <option v-for="item in data.fabric.elements" v-if="item.type=='wall' || item.type=='roof' || item.type=='loft'">{{ item.id }}</option>
+                </select></td>                
+                <td><span v-if="element.type=='floor'"><input style="width:35px" v-model.number="element.perimeter" @change="update" /> <span class="unit">m</span></span></td>
+                <!-- Orientation -->
+                <td><select class="center" v-if="element.type=='window'" v-model="element.orientation" @change="update">
+                  <option v-for="(item,index) in ['(N)','(NE/NW)','(E/W)','(SE/SW)','(S)']" v-bind:value="index">{{ item }}</option>
+                </select></td>
+                <!-- Overshading -->
+                <td><select class="center" v-if="element.type=='window'" v-model="element.overshading" @change="update">
+                  <option v-for="(item,index) in {'0':'>80%','1':'60%-80%','2':'20%-60%','3':'<20%'}" v-bind:value="index">{{ item }}</option>
+                </select></td>
+                <td>{{ element.uvalue }}</td>
+                <td>{{ element.wk | toFixed(1) }} <span class="unit">W/K</span></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFloor(index)" /></td>
+              </tr>
+              <tr>
+              <td><div style="cursor:pointer" @click="addFloor"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element</div></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="sap.js"></script>
