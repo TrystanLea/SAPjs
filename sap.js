@@ -42,6 +42,11 @@ $.getJSON( "openBEM/example.json", function( result ) {
         deleteFloor: function (index) {
           this.data.floors.splice(index,1)
           this.update()
+        },
+        addIVF: function(){},
+        addEVP: function(){},
+        toggleSection: function (roomName) {
+            $(".room-elements[name="+roomName+"]").slideToggle(); 
         }
       },
       // -------------------------------------------------------------

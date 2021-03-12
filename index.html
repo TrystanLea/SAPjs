@@ -18,9 +18,8 @@
     <div id="sap">
       <div id="heatloss">
         <div class='section'>
-        
-          <div class='section-heading'><b>Location</b></div>    
-          <div class="room-elements">
+          <div class='section-heading' @click="toggleSection('location')"><b>Location</b></div>    
+          <div class="room-elements hide" name="location">
             <table>
               <tr>
                 <td>Region</td>
@@ -36,9 +35,10 @@
               </tr>
             </table>
           </div>
-        
-          <div class='section-heading'><b>Overall building dimensions</b></div>
-          <div class="room-elements">
+        </div>
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('dimensions')"><b>Overall building dimensions</b></div>
+          <div class="room-elements hide" name="dimensions">
             <table>
               <tr>
                 <th>Name</th>
@@ -64,11 +64,11 @@
               <tr><td>Total floor area</td><td style="width: 120px;">{{ data.TFA | toFixed(1) }} <span class="unit">m2</span></td></tr>
               <tr><td>Total volume</td><td style="width: 120px;">{{ data.volume | toFixed(1) }} <span class="unit">m3</span></td></tr>
             </table>
-            
           </div>
-          
-          <div class='section-heading'><b>Occupancy</b></div>    
-          <div class="room-elements">
+        </div>
+        <div class='section'>          
+          <div class='section-heading' @click="toggleSection('occupancy')"><b>Occupancy</b></div>    
+          <div class="room-elements hide" name="occupancy">
             <table>
               <tr>
                 <td>Floor area based occupancy</td>
@@ -86,11 +86,10 @@
               </tr>
             </table>
           </div>
-          
-        </div>
+        </div>       
         <div class='section'>
-          <div class='section-heading'><b>Fabric</b></div>
-          <div class="room-elements">
+          <div class='section-heading' @click="toggleSection('fabric')"><b>Fabric</b></div>
+          <div class="room-elements hide" name="fabric">
             <!------------------------------------------------->
             <table style="width:70%">
               <tr>
@@ -163,8 +162,118 @@
             </table>
           </div>
         </div>
+    
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('ventilation')"><b>Ventilation</b></div>
+          <div class="room-elements" name="ventilation">
+            <table style="width:50%; float:left">
+              <tr>
+                <td style="width:60%">Ventilation Type</td>
+                <td>
+                  <select v-model="data.ventilation.ventilation_type" @change="update">
+                    <option v-for="(name,index) in datasets.ventilation_types" v-bind:value="index">{{ name }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Dwelling construction</td>
+                <td>
+                  <select v-model="data.ventilation.dwelling_construction" @change="update">
+                    <option value="masonry">Masonry</option>
+                    <option value="timberframe">Timber frame</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Suspended wooden floor</td>
+                <td>
+                  <select v-model="data.ventilation.suspended_wooden_floor" @change="update">
+                    <option value="0">n/a</option>
+                    <option value="sealed">Sealed</option>
+                    <option value="unsealed">Unsealed</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Draught lobby</td>
+                <td>
+                  <input type="checkbox" v-model="data.ventilation.draught_lobby" @change="update" style="width:auto">
+                </td>
+              </tr>
+              <tr>
+                <td>Percentage draught proofed</td>
+                <td><input style="width:35px" v-model.number="data.ventilation.percentage_draught_proofed" @change="update" /> <span class="unit">%</span></td>
+              </tr>
+              <tr>
+                <td>Number of sides sheltered</td>
+                <td><input style="width:35px" v-model.number="data.ventilation.number_of_sides_sheltered" @change="update" /> <span class="unit">sides</span></td>
+              </tr>
+            </table>
+            
+            <table style="width:40%; margin-left:20px; float:left">
+              <tr>
+                <td>Use air permeability test result</td>
+                <td>
+                  <input type="checkbox" v-model="data.ventilation.air_permeability_test" @change="update" style="width:auto">
+                </td>
+              </tr> 
+              <tr>
+                <td>Air permeability value</td>
+                <td><input style="width:35px" v-model.number="data.ventilation.air_permeability_value" @change="update" /> <span class="unit"></span></td>
+              </tr>
+            </div>
+              
+            <table style="width:40%; margin-left:20px;  margin-top:20px; float:left">
+              <tr>
+                <td>System air change rate</td>
+                <td><input style="width:35px" v-model.number="data.ventilation.system_air_change_rate" @change="update" /> <span class="unit">AC/h</span></td>
+              </tr>
+              <tr>
+                <td>Balanced heat recovery efficiency</td>
+                <td><input style="width:35px" v-model.number="data.ventilation.balanced_heat_recovery_efficiency" @change="update" /> <span class="unit">%</span></td>
+              </tr>
+            </table>
+            
+            <div style="clear:both"></div>
+            <br>
+            <b>IVF</b>
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Ventilation rate</th>
+                <th style="width:20px"></th>
+              </tr>
+              <tr v-for="(item,index) in data.ventilation.IVF">
+                <td><input v-model="item.name" @change="update" /></td>
+                <td><input style="width:60px" v-model.number="item.ventilation_rate" @change="update" /> <span class="unit"></span></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteIVF(index)" /></td>
+              </tr>
+              <tr>
+              <td><div style="cursor:pointer" @click="addIVF"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add ventilation point</div></td>
+              </tr>
+            </table>
+            
+            <b>EVP</b>
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Ventilation rate</th>
+                <th style="width:20px"></th>
+              </tr>
+              <tr v-for="(item,index) in data.ventilation.EVP">
+                <td><input v-model="item.name" @change="update" /></td>
+                <td><input style="width:60px" v-model.number="item.ventilation_rate" @change="update" /> <span class="unit"></span></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteEVP(index)" /></td>
+              </tr>
+              <tr>
+              <td><div style="cursor:pointer" @click="addEVP"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add ventilation point</div></td>
+              </tr>
+            </table>
+            
+          </div>
+        </div>
+           
       </div>
-
     </div>
   </div>
 </body>
