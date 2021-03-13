@@ -3,7 +3,7 @@
 <script type="text/javascript" src="openBEM/datasets.js"></script>
 <script type="text/javascript" src="openBEM/openBEM.js"></script>
 <script type="text/javascript" src="topgraphic/ui-mhep.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css?v=2" />
+<link rel="stylesheet" type="text/css" href="style.css?v=3" />
 
 <body>
   <div class="page">
@@ -165,7 +165,7 @@
     
         <div class='section'>
           <div class='section-heading' @click="toggleSection('ventilation')"><b>Ventilation</b></div>
-          <div class="room-elements" name="ventilation">
+          <div class="room-elements hide" name="ventilation">
             <table style="width:50%; float:left">
               <tr>
                 <td style="width:60%">Ventilation Type</td>
@@ -272,7 +272,182 @@
             
           </div>
         </div>
-           
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('Temperature')"><b>Space heating</b></div>
+          <div class="room-elements" name="Temperature">
+            <table>
+              <tr>
+                <td>Target temperature</td>
+                <td><input v-model.number="data.temperature.target" @change="update"> <span class="unit">C</span></td>
+              </tr>
+              <tr>
+                <td>Living area</td>
+                <td><input v-model.number="data.temperature.living_area" @change="update"> <span class="unit">m2</span></td>
+              </tr>
+              <tr>
+                <td>Heating hours off</td>
+                <td><input v-model.number="data.temperature.hours_off" @change="update"> <span class="unit"></span></td>
+              </tr>
+              <tr>
+                <td>Heating off during summer</td>
+                <td>
+                  <input type="checkbox" v-model="data.space_heating.heating_off_summer" @change="update" style="width:auto">
+                </td>
+              </tr>
+              <tr>
+                <td>Use utilisation factor for gains</td>
+                <td>
+                  <input type="checkbox" v-model="data.space_heating.use_utilfactor_forgains" @change="update" style="width:auto">
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('waterheating')"><b>Water Heating</b></div>
+          <div class="room-elements" name="waterheating">
+            <table>
+              <tr>
+                <td>Override annual energy content</td>
+                <td><input type="checkbox" v-model="data.water_heating.override_annual_energy_content" @change="update" style="width:auto"></td>
+              </tr> 
+              <tr>
+                <td>Annual energy content</td>
+                <td>
+                  <span v-if="data.water_heating.override_annual_energy_content">
+                    <input v-model.number="data.water_heating.annual_energy_content" @change="update"> <span class="unit">kWh</span>     
+                  </span>
+                  <span v-else>
+                  {{ data.water_heating.annual_energy_content | toFixed(1) }} <span class="unit">kWh</span>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Low water use design</td>
+                <td><input type="checkbox" v-model="data.water_heating.low_water_use_design" @change="update" style="width:auto"></td>
+              </tr>
+            </table>
+            <br>
+            <div v-if="!data.water_heating.all_instantaneous">
+            <div class="heading">Hot water storage</div>
+              <table>
+                <tr>
+                  <td>Storage volume</td>
+                  <td>
+                    <input v-model.number="data.water_heating.storage_type.storage_volume" @change="update"> <span class="unit">L</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Hot water control type</td>
+                  <td>
+                    <select v-model="data.water_heating.hot_water_control_type" @change="update">
+                      <option value="no_cylinder_thermostat">No cylinder thermostat</option>
+                      <option>Cylinder thermostat, water heating not separately timed</option>
+                      <option>Cylinder thermostat, water heating separately timed</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Pipework insulation</td>
+                  <td>
+                    <select v-model="data.water_heating.pipework_insulation" @change="update">
+                      <option>Uninsulated primary pipework</option>
+                      <option>First 1m from cylinder insulated</option>
+                      <option>All accesible piperwok insulated</option>
+                      <option>Fully insulated primary pipework</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Storage loss factor known</td>
+                  <td><input type="checkbox" v-model="data.water_heating.storage_type.declared_loss_factor_known" @change="update" style="width:auto"></td>
+                </tr> 
+                <tr v-if="data.water_heating.storage_type.declared_loss_factor_known">
+                  <td>Manufacturer loss factor</td>
+                  <td>
+                    <input v-model.number="data.water_heating.storage_type.manufacturer_loss_factor" @change="update">
+                  </td>
+                </tr>
+                <tr v-if="data.water_heating.storage_type.declared_loss_factor_known">
+                  <td>Temperature factor A</td>
+                  <td>
+                    <input v-model.number="data.water_heating.storage_type.temperature_factor_a" @change="update">
+                  </td>
+                </tr>
+                <tr v-if="!data.water_heating.storage_type.declared_loss_factor_known">
+                  <td>Loss factor</td>
+                  <td>
+                    <input v-model.number="data.water_heating.storage_type.loss_factor_b" @change="update">
+                  </td>
+                </tr>
+                <tr v-if="!data.water_heating.storage_type.declared_loss_factor_known">
+                  <td>Volume factor</td>
+                  <td>
+                    <input v-model.number="data.water_heating.storage_type.volume_factor_b" @change="update">
+                  </td>
+                </tr>
+                <tr v-if="!data.water_heating.storage_type.declared_loss_factor_known">
+                  <td>Temperature factor</td>
+                  <td>
+                    <input v-model.number="data.water_heating.storage_type.temperature_factor_b" @change="update">
+                  </td>
+                </tr>
+                <tr>
+                  <td>Contains dedicated solar storage or WWHRSs</td>
+                  <td><input type="checkbox" v-model="data.water_heating.contains_dedicated_solar_storage_or_WWHRSs" @change="update" style="width:auto"></td>
+                </tr>
+                <tr>
+                  <td>Solar water heating</td>
+                  <td><input type="checkbox" v-model="data.water_heating.solar_water_heating" @change="update" style="width:auto"></td>
+                </tr>
+                <tr>
+                  <td>Hot water store in dwelling</td>
+                  <td><input type="checkbox" v-model="data.water_heating.hot_water_store_in_dwelling" @change="update" style="width:auto"></td>
+                </tr>
+                <tr>
+                  <td>Community heating</td>
+                  <td><input type="checkbox" v-model="data.water_heating.community_heating" @change="update" style="width:auto"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div> 
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('heatingsystems')"><b>Heating Systems</b></div>
+          <div class="room-elements hide" name="heatingsystems">
+          
+          </div>
+        </div> 
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('fuels')"><b>Fuels</b></div>
+          <div class="room-elements hide" name="fuels">
+          
+          </div>
+        </div> 
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('SAPLAC')"><b>SAP Lighting, Appliances & Cooking</b></div>
+          <div class="room-elements hide" name="SAPLAC">
+          
+          </div>
+        </div>
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('appliancelist')"><b>Detailed appliance list</b></div>
+          <div class="room-elements hide" name="appliancelist">
+          
+          </div>
+        </div> 
+        <div class='section' v-if="data.water_heating.solar_water_heating">
+          <div class='section-heading' @click="toggleSection('shw')"><b>Solar hot water</b></div>
+          <div class="room-elements hide" name="shw">
+          
+          </div>
+        </div> 
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('generation')"><b>Generation</b></div>
+          <div class="room-elements hide" name="generation">
+          
+          </div>
+        </div>    
       </div>
     </div>
   </div>
