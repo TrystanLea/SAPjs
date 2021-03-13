@@ -5,6 +5,8 @@
 <script type="text/javascript" src="topgraphic/ui-mhep.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css?v=3" />
 
+<html lang="en">
+<meta charset="utf-8">
 <body>
   <div class="page">
     <div class='section'>
@@ -274,7 +276,7 @@
         </div>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('Temperature')"><b>Space heating</b></div>
-          <div class="room-elements" name="Temperature">
+          <div class="room-elements hide" name="Temperature">
             <table>
               <tr>
                 <td>Target temperature</td>
@@ -301,11 +303,12 @@
                 </td>
               </tr>
             </table>
+            <p>Space heating energy requirement: {{ data.space_heating.annual_heating_demand | toFixed(0) }} kWh</p>
           </div>
         </div>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('waterheating')"><b>Water Heating</b></div>
-          <div class="room-elements" name="waterheating">
+          <div class="room-elements hide" name="waterheating">
             <table>
               <tr>
                 <td>Override annual energy content</td>
@@ -410,32 +413,46 @@
                 </tr>
               </table>
             </div>
+            <p>Hot water energy requirement: {{ data.water_heating.annual_waterheating_demand | toFixed(0) }} kWh</p>
           </div>
         </div> 
         <div class='section'>
           <div class='section-heading' @click="toggleSection('heatingsystems')"><b>Heating Systems</b></div>
           <div class="room-elements hide" name="heatingsystems">
-          
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Provides</th>
+                <th>Space</th>
+                <th>Hot Water</th>
+                <th>Summer %eff</th>
+                <th>Winter %eff</th>
+                <th>Fuel</th>
+                <th>Responsiveness</th>
+                <th>Controls</th>
+                <th>T Adjust</th>
+              </tr>
+              <tr v-for="(item,index) in data.heating_systems">
+                <td><input v-model="item.name" @change="update" style="width:200px"/></td>
+                <td></td>
+                <td><input v-model.number="item.fraction_space" @change="update"/></td>
+                <td><input v-model.number="item.fraction_water_heating" @change="update"/></td>
+                <td><input v-model.number="item.winter_efficiency" @change="update"/></td>
+                <td><input v-model.number="item.summer_efficiency" @change="update"/></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input v-model.number="item.temperature_adjustment" @change="update"/></td>
+              </tr>
+            </table>
           </div>
         </div> 
         <div class='section'>
-          <div class='section-heading' @click="toggleSection('fuels')"><b>Fuels</b></div>
-          <div class="room-elements hide" name="fuels">
-          
-          </div>
-        </div> 
-        <div class='section'>
-          <div class='section-heading' @click="toggleSection('SAPLAC')"><b>SAP Lighting, Appliances & Cooking</b></div>
+          <div class='section-heading' @click="toggleSection('SAPLAC')"><b>Lighting, Appliances & Cooking</b></div>
           <div class="room-elements hide" name="SAPLAC">
           
           </div>
         </div>
-        <div class='section'>
-          <div class='section-heading' @click="toggleSection('appliancelist')"><b>Detailed appliance list</b></div>
-          <div class="room-elements hide" name="appliancelist">
-          
-          </div>
-        </div> 
         <div class='section' v-if="data.water_heating.solar_water_heating">
           <div class='section-heading' @click="toggleSection('shw')"><b>Solar hot water</b></div>
           <div class="room-elements hide" name="shw">
@@ -443,13 +460,75 @@
           </div>
         </div> 
         <div class='section'>
-          <div class='section-heading' @click="toggleSection('generation')"><b>Generation</b></div>
+          <div class='section-heading' @click="toggleSection('generation')"><b>Onsite Generation</b></div>
           <div class="room-elements hide" name="generation">
           
           </div>
         </div>    
+
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('energy_and_fuels')"><b>Energy requirements and fuels</b></div>
+          <div class="room-elements" name="energy_and_fuels">
+            <table>
+              <tbody v-for="(item,index) in data.energy_requirements">
+                <tr style="background-color:#f3f3f3">
+                  <th>{{ item.name }}</th>
+                  <th></th><th></th><th></th>
+                </tr>
+                <tr style="font-size:14px">
+                  <th>Supplied by:</th>
+                  <th>Fraction</th>
+                  <th>Demand: {{ item.quantity | toFixed(2) }} kWh/year</th>
+                  <th>Fuel input: {{ data.fuel_requirements[index].quantity | toFixed(2) }} kWh/year</th>
+                </tr>
+                <tr style="font-size:14px" v-for="f in data.fuel_requirements[index].list">
+                  <td>{{ f.fuel }}</td>
+                  <td>{{ f.fraction | toFixed(2) }}</td>
+                  <td>{{ f.demand | toFixed(2) }} kWh/year</td>
+                  <td>{{ f.fuel_input | toFixed(2) }} kWh/year</td>
+                </tr>   
+              </tbody>
+            </table>
+            
+            <br>
+            <div class="heading">Fuel summary and costs</div>
+            
+            <table style="font-size:14px">
+              <tr>
+                <th style="width:120px">Fuel type</th>
+                <th>Fuel quantity</th>
+                <th>CO2 factor<br>kgCO2/kWh</th>
+                <th>Annual CO2</th>
+                <th>Primary Energy Factor</th>
+                <th>Primary Energy</th>
+                <th style="width:100px">Unit cost</th>    
+                <th>Annual standing charge</th>
+                <th>Annual cost</th>         
+              </tr>
+              <tr v-for="(item,index) in data.fuel_totals">
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity | toFixed(2) }} <span class="unit">kWh</span></td>
+                <td><input v-model.number="data.fuels[index].co2factor" @change="update" style="width:50px; font-size:14px" /></td>   
+                <td>{{ item.annualco2 | toFixed(2) }} <span class="unit">kg</span></td>
+                <td><input v-model.number="data.fuels[index].primaryenergyfactor" @change="update" style="width:50px; font-size:14px" /></td>   
+                <td>{{ item.primaryenergy | toFixed(2) }} <span class="unit">kWh</span></td>
+                <td><input v-model.number="data.fuels[index].fuelcost" @change="update" style="width:50px; font-size:14px" /> p/kWh</td>   
+                <td>£<input v-model.number="data.fuels[index].standingcharge" @change="update" style="width:30px; text-align:center; font-size:14px" />/year</td>   
+                <td>£{{ item.annualcost | toFixed(2) }}</td>
+              </tr>
+            </table>
+            
+            <br>
+            <table>
+              <tr><td>Total energy cost:</td><td>£{{ data.total_cost | toFixed(2) }} ({{ data.SAP.rating | toFixed(1) }})</td></tr>
+              <tr><td>Total energy income (FIT's):</td><td>£{{ data.total_income | toFixed(2) }}</td></tr>
+              <tr><td>Net cost:</td><td>£{{ data.net_cost | toFixed(2) }}</td></tr>
+            </table>
+          </div>
+        </div> 
       </div>
     </div>
   </div>
 </body>
+</html>
 <script type="text/javascript" src="sap.js"></script>
