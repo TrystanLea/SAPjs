@@ -19,6 +19,9 @@
     </div>
     <div id="sap">
       <div id="heatloss">
+        <!------------------------------------------------------------------------------------>
+        <!-- Location -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('location')"><b>Location</b></div>    
           <div class="room-elements hide" name="location">
@@ -38,6 +41,10 @@
             </table>
           </div>
         </div>
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Dimenstions -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('dimensions')"><b>Overall building dimensions</b></div>
           <div class="room-elements hide" name="dimensions">
@@ -68,6 +75,10 @@
             </table>
           </div>
         </div>
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Occupancy -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>          
           <div class='section-heading' @click="toggleSection('occupancy')"><b>Occupancy</b></div>    
           <div class="room-elements hide" name="occupancy">
@@ -88,7 +99,11 @@
               </tr>
             </table>
           </div>
-        </div>       
+        </div> 
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Fabric -->
+        <!------------------------------------------------------------------------------------>      
         <div class='section'>
           <div class='section-heading' @click="toggleSection('fabric')"><b>Fabric</b></div>
           <div class="room-elements hide" name="fabric">
@@ -164,7 +179,10 @@
             </table>
           </div>
         </div>
-    
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Ventilation -->
+        <!------------------------------------------------------------------------------------>    
         <div class='section'>
           <div class='section-heading' @click="toggleSection('ventilation')"><b>Ventilation</b></div>
           <div class="room-elements hide" name="ventilation">
@@ -274,6 +292,10 @@
             
           </div>
         </div>
+        
+        <!------------------------------------------------------------------------------------>
+        <!-- Space heating -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('Temperature')"><b>Space heating</b></div>
           <div class="room-elements hide" name="Temperature">
@@ -306,6 +328,10 @@
             <p>Space heating energy requirement: {{ data.space_heating.annual_heating_demand | toFixed(0) }} kWh</p>
           </div>
         </div>
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Water heating -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('waterheating')"><b>Water Heating</b></div>
           <div class="room-elements hide" name="waterheating">
@@ -416,6 +442,10 @@
             <p>Hot water energy requirement: {{ data.water_heating.annual_waterheating_demand | toFixed(0) }} kWh</p>
           </div>
         </div> 
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Heating Systems -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('heatingsystems')"><b>Heating Systems</b></div>
           <div class="room-elements hide" name="heatingsystems">
@@ -447,25 +477,108 @@
             </table>
           </div>
         </div> 
+
+        <!------------------------------------------------------------------------------------>
+        <!-- Lighting, Appliances & Cooking -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
-          <div class='section-heading' @click="toggleSection('SAPLAC')"><b>Lighting, Appliances & Cooking</b></div>
-          <div class="room-elements hide" name="SAPLAC">
-          
+          <div class='section-heading' @click="toggleSection('LAC')"><b>Lighting, Appliances & Cooking</b></div>
+          <div class="room-elements hide" name="LAC">
+            <table>
+              <tr>
+                <td>Calculation type: </td>
+                <td><select v-model="data.LAC_calculation_type">
+                  <option value="SAP">SAP</option>
+                  <option value="detailedlist">Detailed appliance List</option>
+                </select></td>
+              </tr>
+              <tr>
+              
+              </tr>            
+            </table>
           </div>
         </div>
+        
+        <!------------------------------------------------------------------------------------>
+        <!-- Solar hot water -->
+        <!------------------------------------------------------------------------------------>
         <div class='section' v-if="data.water_heating.solar_water_heating">
           <div class='section-heading' @click="toggleSection('shw')"><b>Solar hot water</b></div>
           <div class="room-elements hide" name="shw">
           
           </div>
         </div> 
+        
+        <!------------------------------------------------------------------------------------>
+        <!-- Onsite Generation -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('generation')"><b>Onsite Generation</b></div>
           <div class="room-elements hide" name="generation">
-          
+            <table style="width:50%">
+              <tr>
+                <td>Use Solar PV calculator</td>
+                <td><input type="checkbox" v-model="data.generation.use_PV_calculator" @change="update" style="width:auto"></td>
+              </tr>
+              <tr v-if="data.generation.use_PV_calculator">
+                <td>kWp installed</td>
+                <td><input v-model.number="data.generation.solarpv_kwp_installed" @change="update"/> kW</td>
+              </tr>
+              <tr v-if="data.generation.use_PV_calculator">
+                <td>Orientation</td>
+                <td><select v-model="data.generation.solarpv_orientation" @change="update">
+                  <option v-for="(item,index) in ['North','NE/NW','East/West','SE/SW','South']" v-bind:value="index">{{ item }}</option>
+                </select></td>
+              </tr>
+              <tr v-if="data.generation.use_PV_calculator">
+                <td>Inclination</td>
+                <td><input v-model.number="data.generation.solarpv_inclination" @change="update"/> degrees</td>
+              </tr>
+              <tr v-if="data.generation.use_PV_calculator">
+                <td>Overshading</td>
+                <td><select v-model="data.generation.solarpv_overshading" @change="update">
+                  <option v-for="(item,index) in {'0.5':'>80%','0.65':'60%-80%','0.8':'20%-60%','1':'<20%'}" v-bind:value="index">{{ item }}</option>
+                </select></td>
+              </tr>
+            </table>
+            <br>
+            <table>
+              <tr>
+                <th style="width:120px"></th>
+                <th>Annual Generation</th>
+                <th>Fraction used on-site</th>
+                <th>Feed in tariff<br>Generation (£/kWh)</th>
+                <th>Feed in tariff<br>Export (£/kWh)</th>
+              </tr>
+              <tr>
+                <td>Solar PV</td>
+                <td v-if="data.generation.use_PV_calculator">{{ data.generation.solar_annual_kwh | toFixed(0) }}</td>
+                <td v-if="!data.generation.use_PV_calculator"><input v-model.number="data.generation.solar_annual_kwh" @change="update"/></td>
+                <td><input v-model.number="data.generation.solar_fraction_used_onsite" @change="update"/></td>
+                <td><input v-model.number="data.generation.solar_FIT" @change="update"/></td>
+                <td><input v-model.number="data.generation.solar_export_FIT" @change="update"/></td>
+              </tr>
+              <tr>
+                <td>Wind</td>
+                <td><input v-model.number="data.generation.wind_annual_kwh" @change="update"/></td>
+                <td><input v-model.number="data.generation.wind_fraction_used_onsite" @change="update"/></td>
+                <td><input v-model.number="data.generation.wind_FIT" @change="update"/></td>
+                <td><input v-model.number="data.generation.wind_export_FIT" @change="update"/></td>
+              </tr>
+              <tr>
+                <td>Hydro</td>
+                <td><input v-model.number="data.generation.hydro_annual_kwh" @change="update"/></td>
+                <td><input v-model.number="data.generation.hydro_fraction_used_onsite" @change="update"/></td>
+                <td><input v-model.number="data.generation.hydro_FIT" @change="update"/></td>
+                <td><input v-model.number="data.generation.hydro_export_FIT" @change="update"/></td>
+              </tr>
+            </table>
           </div>
         </div>    
 
+        <!------------------------------------------------------------------------------------>
+        <!-- Energy requirements and fuels -->
+        <!------------------------------------------------------------------------------------>
         <div class='section'>
           <div class='section-heading' @click="toggleSection('energy_and_fuels')"><b>Energy requirements and fuels</b></div>
           <div class="room-elements" name="energy_and_fuels">
