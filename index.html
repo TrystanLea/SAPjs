@@ -3,7 +3,7 @@
 <script type="text/javascript" src="openBEM/datasets.js"></script>
 <script type="text/javascript" src="openBEM/openBEM.js"></script>
 <script type="text/javascript" src="topgraphic/ui-mhep.js"></script>
-<link rel="stylesheet" type="text/css" href="style.css?v=3" />
+<link rel="stylesheet" type="text/css" href="style.css?v=4" />
 
 <html lang="en">
 <meta charset="utf-8">
@@ -486,16 +486,106 @@
           <div class="room-elements hide" name="LAC">
             <table>
               <tr>
-                <td>Calculation type: </td>
-                <td><select v-model="data.LAC_calculation_type">
+                <th>Calculation type: </th>
+                <td style="width:33%"><select v-model="data.LAC_calculation_type">
                   <option value="SAP">SAP</option>
                   <option value="detailedlist">Detailed appliance List</option>
                 </select></td>
               </tr>
-              <tr>
-              
-              </tr>            
             </table>
+            <br>
+            <div v-if="data.LAC_calculation_type=='SAP'">
+              <div class="heading">Lighting</div>
+              <table>
+                <tr>
+                  <td>The total number of fixed lighting outlets (L)</td>
+                  <td style="width:33%"><input v-model.number="data.LAC.L" @change="update"></td>
+                </tr>
+                <tr>
+                  <td>The number of fixed low energy lighting outlets (LLE)</td>
+                  <td><input v-model.number="data.LAC.LLE" @change="update"></td>
+                </tr>
+                <tr>
+                  <td>Reduced internal heat gains for lighting:</td>
+                  <td><input type="checkbox" v-model="data.LAC.reduced_heat_gains_lighting" @change="update" style="width:auto"></td>
+                </tr>
+                <tr>
+                  <td>Annual energy use:</td>
+                  <td>{{ data.energy_requirements.lighting.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
+                </tr>
+              </table>
+              <br>
+              <table>
+                <tr>
+                  <th>Lighting Fuel</th>
+                  <th>Fraction</th>
+                  <th style="width:33%">Fuel input</th>
+                </tr>
+                <tr v-for="(item,index) in data.LAC.fuels_lighting">
+                  <td><select v-model="item.fuel" @change="update">
+                    <option v-for="(fuel,fuel_index) in data.fuels">{{ fuel_index }}</option>
+                  </select></td>
+                  <td><input v-model.number="item.fraction" @change="update" style="width:60px"></td>
+                  <td>{{ item.fuel_input | toFixed(2) }} kWh/year</td>
+                </tr>
+              </table>
+              <br>
+              
+              <div class="heading">Appliances</div>
+              <table>
+                <tr>
+                  <td>Energy efficient appliances and reduced internal heat gains:</td>
+                  <td style="width:33%"><input type="checkbox" v-model="data.LAC.energy_efficient_appliances" @change="update" style="width:auto"></td>
+                </tr>
+                <tr>
+                  <td>Annual energy use:</td>
+                  <td>{{ data.energy_requirements.appliances.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
+                </tr>
+              </table>
+              <br>
+              <table>
+                <tr>
+                  <th>Appliances Fuel</th>
+                  <th>Fraction</th>
+                  <th style="width:33%">Fuel input</th>
+                </tr>
+                <tr v-for="(item,index) in data.LAC.fuels_appliances">
+                  <td><select v-model="item.fuel" @change="update">
+                    <option v-for="(fuel,fuel_index) in data.fuels">{{ fuel_index }}</option>
+                  </select></td>
+                  <td><input v-model.number="item.fraction" @change="update" style="width:60px"></td>
+                  <td>{{ item.fuel_input | toFixed(2) }} kWh/year</td>
+                </tr>
+              </table>
+              <br>
+              
+              <div class="heading">Cooking</div>
+              <table>
+                <tr>
+                  <td>Reduced internal heat gains for cooking:</td>
+                  <td style="width:33%"><input type="checkbox" v-model="data.LAC.energy_efficient_cooking" @change="update" style="width:auto"></td>
+                </tr>
+                <tr>
+                  <td>Annual energy use:</td>
+                  <td>{{ data.energy_requirements.cooking.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
+                </tr>      
+              </table>
+              <br>
+              <table>
+                <tr>
+                  <th>Cooking Fuels</th>
+                  <th>Fraction</th>
+                  <th style="width:33%">Fuel input</th>
+                </tr>
+                <tr v-for="(item,index) in data.LAC.fuels_cooking">
+                  <td><select v-model="item.fuel" @change="update">
+                    <option v-for="(fuel,fuel_index) in data.fuels">{{ fuel_index }}</option>
+                  </select></td>
+                  <td><input v-model.number="item.fraction" @change="update" style="width:60px"></td>
+                  <td>{{ item.fuel_input | toFixed(2) }} kWh/year</td>
+                </tr>
+              </table>
+            </div>            
           </div>
         </div>
         
@@ -588,13 +678,13 @@
                   <th>{{ item.name }}</th>
                   <th></th><th></th><th></th>
                 </tr>
-                <tr style="font-size:14px">
+                <tr>
                   <th>Supplied by:</th>
                   <th>Fraction</th>
                   <th>Demand: {{ item.quantity | toFixed(2) }} kWh/year</th>
                   <th>Fuel input: {{ data.fuel_requirements[index].quantity | toFixed(2) }} kWh/year</th>
                 </tr>
-                <tr style="font-size:14px" v-for="f in data.fuel_requirements[index].list">
+                <tr v-for="f in data.fuel_requirements[index].list">
                   <td>{{ f.fuel }}</td>
                   <td>{{ f.fraction | toFixed(2) }}</td>
                   <td>{{ f.demand | toFixed(2) }} kWh/year</td>
@@ -606,7 +696,7 @@
             <br>
             <div class="heading">Fuel summary and costs</div>
             
-            <table style="font-size:14px">
+            <table>
               <tr>
                 <th style="width:120px">Fuel type</th>
                 <th>Fuel quantity</th>
@@ -621,12 +711,12 @@
               <tr v-for="(item,index) in data.fuel_totals">
                 <td>{{ item.name }}</td>
                 <td>{{ item.quantity | toFixed(2) }} <span class="unit">kWh</span></td>
-                <td><input v-model.number="data.fuels[index].co2factor" @change="update" style="width:50px; font-size:14px" /></td>   
+                <td><input v-model.number="data.fuels[index].co2factor" @change="update" style="width:50px" /></td>   
                 <td>{{ item.annualco2 | toFixed(2) }} <span class="unit">kg</span></td>
-                <td><input v-model.number="data.fuels[index].primaryenergyfactor" @change="update" style="width:50px; font-size:14px" /></td>   
+                <td><input v-model.number="data.fuels[index].primaryenergyfactor" @change="update" style="width:50px" /></td>   
                 <td>{{ item.primaryenergy | toFixed(2) }} <span class="unit">kWh</span></td>
-                <td><input v-model.number="data.fuels[index].fuelcost" @change="update" style="width:50px; font-size:14px" /> p/kWh</td>   
-                <td>£<input v-model.number="data.fuels[index].standingcharge" @change="update" style="width:30px; text-align:center; font-size:14px" />/year</td>   
+                <td><input v-model.number="data.fuels[index].fuelcost" @change="update" style="width:50px" /> p/kWh</td>   
+                <td>£<input v-model.number="data.fuels[index].standingcharge" @change="update" style="width:30px; text-align:center" />/year</td>   
                 <td>£{{ item.annualcost | toFixed(2) }}</td>
               </tr>
             </table>
