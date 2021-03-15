@@ -585,7 +585,29 @@
                   <td>{{ item.fuel_input | toFixed(2) }} kWh/year</td>
                 </tr>
               </table>
-            </div>            
+            </div>
+            <div v-if="data.LAC_calculation_type=='detailedlist'">
+              <table>
+                <tr v-for="item in data.appliancelist.list">
+                  <td>
+                  <select v-model="item.category" @change="update">
+                    <option value="lighting">Lighting</option>
+                    <option value="appliances">Appliances</option>
+                    <option value="cooking">Cooking</option>
+                  </select>
+                  </td>
+                  <td><input v-model="item.name" @change="update" style="width:120px"></td>
+                  <td><input v-model.number="item.power" @change="update" style="width:60px"> <span class="unit">W</span></td>
+                  <td><input v-model.number="item.hours" @change="update" style="width:60px"> <span class="unit">hrs</span></td>
+                  <td><input v-model.number="item.kwhd" @change="update" style="width:60px"> <span class="unit">kWh</span></td>     
+                  <td><input v-model.number="item.kwhy" @change="update" style="width:60px"> <span class="unit">kWh</span></td>   
+                  <td><select v-model="item.fuel" @change="update">
+                    <option v-for="(fuel,fuel_index) in data.fuels">{{ fuel_index }}</option>
+                  </select></td>
+                  <td><input v-model.number="item.efficiency" @change="update" style="width:60px"></td>     
+                </tr>
+              </table>
+            </div>   
           </div>
         </div>
         
