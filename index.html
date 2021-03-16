@@ -617,7 +617,70 @@
         <div class='section' v-if="data.water_heating.solar_water_heating">
           <div class='section-heading' @click="toggleSection('shw')"><b>Solar hot water</b></div>
           <div class="room-elements hide" name="shw">
-          
+            <table>
+              <tr>
+                <td>Aperture area of solar collector, m2</td>
+                <td style="width:25%"><input v-model.number="data.SHW.A" @change="update"></td>
+              </tr>
+              <tr>
+                <td>Zero-loss collector efficiency, η0, from test certificate or Table H1</td>
+                <td><input v-model.number="data.SHW.n0" @change="update"></td>
+              </tr>              
+              <tr>
+                <td>Collector linear heat loss coefficient, a1, from test certificate</td>
+                <td><input v-model.number="data.SHW.a1" @change="update"></td>
+              </tr>               
+              <tr>
+                <td>Collector 2nd order heat loss coefficient, a2, from test certificate</td>
+                <td><input v-model.number="data.SHW.a2" @change="update"></td>
+              </tr>
+              <tr>
+                <td>Collector Orientation</td>
+                <td><select v-model="data.SHW.orientation" @change="update">
+                <option v-for="(item,index) in ['North','NE/NW','East/West','SE/SW','South']" v-bind:value="index">{{ item }}</option>
+                </select></td>
+              </tr>
+              <tr>
+                <td>Collector Inclination (degrees i.e 35 degrees)</td>
+                <td><input v-model.number="data.SHW.inclination" @change="update"></td>
+              </tr> 
+              <tr>
+                <td>Annual solar radiation per m2 from U3.3 in Appendix U for the orientation and tilt of the collector</td>
+                <td>{{ data.SHW.annual_solar | toFixed(0) }} <span class="unit">kWh</span></td>
+              </tr> 
+              <tr>
+                <td>Overshading</td>
+                <td><select v-model="data.SHW.overshading" @change="update">
+                  <option v-for="(item,index) in {'0.5':'>80%','0.65':'60%-80%','0.8':'20%-60%','1':'<20%'}" v-bind:value="index">{{ item }}</option>
+                </select></td>
+              </tr>
+              <tr>
+                <th>Solar energy available</th>
+                <th>{{ data.SHW.solar_energy_available | toFixed(0) }} <span class="unit">kWh</span></th>
+              </tr>
+              <tr>
+                <td>Solar water heating pump</td>
+                <td><select v-model="data.SHW.pump" @change="update">
+                  <option value="PV">PV powered</option>
+                  <option value="electric">Electrically powered</option>
+                </select></td>
+              </tr>
+            </table>
+            <p><b>Note:</b> The overall performance of solar water systems depends on how the hot water system is used, e.g. daily draw-off patterns and the use of other water heating devices such as a boiler or an immersion. The procedure described here is not suitable for detailed design in a particular case. It is intended to give a representative value of the solar contribution to domestic water heating over a range of users.</p>
+            <table> 
+              <tr>
+                <td>Dedicated solar storage volume, Vs, (litres)</td>
+                <td style="width:25%"><input v-model.number="data.SHW.combined_cylinder_volume" @change="update" style="width:30px"> <span class="unit">L</span></td>
+              </tr>
+              <tr>
+                <td>If combined cylinder, total volume of cylinder (litres)</td>
+                <td><input v-model.number="data.SHW.Vs" @change="update" style="width:30px"> <span class="unit">L</span></td>
+              </tr>
+              <tr>
+                <th>Utilised annual solar input</th>
+                <th>{{ data.SHW.Qs | toFixed(0) }} <span class="unit">kWh</span></th>
+              </tr>
+            </table>
           </div>
         </div> 
         
