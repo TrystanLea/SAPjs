@@ -366,7 +366,7 @@
                     <input v-model.number="data.water_heating.storage_type.storage_volume" @change="update"> <span class="unit">L</span>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="data.water_heating.primary_circuit_loss_flag">
                   <td>Hot water control type</td>
                   <td>
                     <select v-model="data.water_heating.hot_water_control_type" @change="update">
@@ -376,7 +376,7 @@
                     </select>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="data.water_heating.primary_circuit_loss_flag">
                   <td>Pipework insulation</td>
                   <td>
                     <select v-model="data.water_heating.pipework_insulation" @change="update">
@@ -449,32 +449,129 @@
         <div class='section'>
           <div class='section-heading' @click="toggleSection('heatingsystems')"><b>Heating Systems</b></div>
           <div class="room-elements hide" name="heatingsystems">
-            <table>
+          <div v-for="(item,index) in data.heating_systems">
+            <div style="padding:10px; border:1px solid #ccc">
+            <div style="float:right"><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFloor(index)" /></div>     
+            <div class="heading">Heating system {{ index+1 }}</div>
+
+            <table style="width:48%; float:left">
               <tr>
-                <th>Name</th>
-                <th>Provides</th>
-                <th>Space</th>
-                <th>Hot Water</th>
-                <th>Summer %eff</th>
-                <th>Winter %eff</th>
-                <th>Fuel</th>
-                <th>Responsiveness</th>
-                <th>Controls</th>
-                <th>T Adjust</th>
+                <th>Efficiency, fraction & fuel</th>
+                <th></th>
+              <tr>
+                <td>Name</td>
+                <td><input v-model="item.name" @change="update" style="width:150px"/></td>
               </tr>
-              <tr v-for="(item,index) in data.heating_systems">
-                <td><input v-model="item.name" @change="update" style="width:200px"/></td>
-                <td></td>
-                <td><input v-model.number="item.fraction_space" @change="update"/></td>
-                <td><input v-model.number="item.fraction_water_heating" @change="update"/></td>
-                <td><input v-model.number="item.winter_efficiency" @change="update"/></td>
-                <td><input v-model.number="item.summer_efficiency" @change="update"/></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><input v-model.number="item.temperature_adjustment" @change="update"/></td>
+              <tr>    
+                <td>Provides</td>
+                <td><select v.model="item.provides" style="width:150px">
+                  <option value="heating_and_water">Heating and hot water</option>
+                  <option value="heating">Heating only</option>  
+                  <option value="water">Hot water only</option>
+                </select></td>   
+              </tr>
+              <tr>
+                <td>Fraction of space heat provided (0-1)</td>
+                <td><input v-model.number="item.fraction_space" @change="update" style="width:30px"/></td>
+              </tr>
+              <tr>  
+                <td>Fraction of water heat provided (0-1)</td>
+                <td><input v-model.number="item.fraction_water_heating" @change="update" style="width:30px"/></td>
+              </tr>
+              <tr>
+                <td>Summer/water efficiency</td>
+                <td><input v-model.number="item.summer_efficiency" @change="update" style="width:30px"/> <span class="unit">%</span></td>
+              </tr>
+              <tr>      
+                <td>Winter/space efficiency</td>
+                <td><input v-model.number="item.winter_efficiency" @change="update" style="width:30px"/> <span class="unit">%</span></td>
+              </tr>
+              <tr>
+                <td>Fuel</td>
+                <td><select v-model="item.fuel" @change="update" style="width:150px">
+                  <option v-for="(fuel,fuel_index) in data.fuels">{{ fuel_index }}</option>
+                </select></td>              
               </tr>
             </table>
+            <table style="width:48%; float:left; margin-left:20px">
+              <tr>
+                <th>Temperature and Controls</th>
+                <th></th>
+              <tr>
+              <tr>
+                <td>Main space heating system</td>
+                <td><select v.model="item.main_space_heating_system" style="width:150px">
+                  <option value="mainHS1">Main heating system</option>
+                  <option value="mainHS2_whole_house">Secondary heating system whole house</option>  
+                  <option value="mainHS2_part_of_the_house">Secondary heating system part of house</option>
+                </select></td>                
+              </tr>             
+              <tr>
+                <td>Responsiveness<br>(0: low, 1: high, SAP:Table 4d)</td>
+                <td><input v-model.number="item.responsiveness" @change="update" style="width:30px"/></td>             
+              </tr>
+              <tr>
+                <td>Controls (1, 2 or 3, see: SAP:Table 4e)</td>
+                <td><input v-model.number="item.heating_controls" @change="update" style="width:30px"/></td>                          
+              </tr>
+              <tr>
+                <td>Temperature Adjustment (SAP:Table 4e)</td>
+                <td><input v-model.number="item.temperature_adjustment" @change="update" style="width:30px"/> <span class="unit">C</span></td>         
+              </tr>
+            </table>
+            <table style="width:48%; float:left; margin-left:20px; margin-top:20px">    
+              <tr>
+                <td>Instantaneous water heating</td>
+                <td><input type="checkbox" v-model="item.instantaneous_water_heating" @change="update" style="width:auto"></td>
+              </tr>          
+              <tr>    
+                <td>Warm air system</td>
+                <td><input type="checkbox" v-model="item.warm_air_system" @change="update" style="width:auto"></td>     
+              </tr>
+            </table>
+            <div style="clear:both"></div>
+            <br>    
+            <table style="width:48%">    
+              <tr>
+                <th>Other energy requirements & losses</th>
+                <th></th>
+              <tr>     
+              <tr>
+                <td>Central heating pump<br><i>(If not already included in efficiency)</i></td>
+                <td><input v-model.number="item.central_heating_pump" @change="update" style="width:30px"/> <span class="unit">kWh/year</span></td>         
+              </tr>
+              <tr v-if="item.central_heating_pump>0">
+                <td>Central heating pump inside</td>
+                <td><input type="checkbox" v-model="item.central_heating_pump_inside" @change="update" style="width:auto"></td>   
+              </tr>   
+              <tr v-if="item.warm_air_system">      
+                <td>Warm air system specific fan power</td>
+                <td><input v-model.number="item.sfp" @change="update" style="width:30px"/> <span class="unit">W(litre/sec)</span></td>
+              </tr>
+              <tr v-else>
+                <td>Fans and supply pumps<br><i>(If not already included in efficiency)</td>
+                <td><input v-model.number="item.fans_and_supply_pumps" @change="update" style="width:30px"/> <span class="unit">kWh/year</span></td>         
+              </tr>        
+              <tr>
+                <td>Combi loss</td>
+                <td><select v-model="item.combi_loss" @change="update" style="width:150px">
+                  <option value="0">n/a</option>             
+                  <option>Instantaneous, without keep hot-facility</option>
+                  <option>Instantaneous, with keep-hot facility controlled by time clock</option>
+                  <option>Instantaneous, with keep-hot facility not controlled by time clock</option>
+                  <option>Storage combi boiler >= 55 litres</option>
+                  <option>Storage combi boiler < 55 litres</option>
+                </select></td>  
+              </tr>
+              <tr>
+                <td>Primary circuit loss</td>
+                <td><input type="checkbox" v-model="item.primary_circuit_loss" @change="update" style="width:auto"></td>      
+              </tr>
+            </table>
+            </div>
+            <br>
+            <div style="cursor:pointer" @click="addFloor"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Heating System</div>     
+          </div>
           </div>
         </div> 
 
