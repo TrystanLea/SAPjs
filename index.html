@@ -10,7 +10,13 @@
 <body>
   <div class="page">
     <div class='section'>
-      <div class='section-heading'><b>SAP Calculation</b></div>
+      <div class='section-heading'>
+        <b>SAP Calculation</b>
+        <button class="btn save">Save</button>
+        <button class="btn open" onclick="document.getElementById('open').click()">Open</button>
+        <input type="file" id="open" style="display:none" accept="application/json"/>
+        <button class="btn new">New</button>
+      </div>
     </div>
     <div class='section'>
       <div class="room-elements">
@@ -119,20 +125,23 @@
                 <th title="Frame factor">ff</th>
                 <th style="width:17px"></th>
               </tr>
-              <tr v-for="(item,index) in data.fabric.library">
-                <td>{{ index }}</td>
+              <tr v-for="(item,key) in data.fabric.library">
+                <td>{{ key }}</td>
                 <td><select v-model="item.type" @change="update">
-                  <option v-for="item in ['wall','party_wall','floor','loft','window']">{{ item }}</option>
+                  <option v-for="type in ['wall','party_wall','floor','loft','window']">{{ type }}</option>
                 </select></td>
                 <td><input style="width:35px" v-model.number="item.uvalue" @change="update" /></td>
                 <td><input style="width:35px" v-model.number="item.kvalue" @change="update" /></td>
                 <td><input style="width:35px" v-model.number="item.g" @change="update" v-if="item.type=='window'" /></td>
                 <td><input style="width:35px" v-model.number="item.gL" @change="update" v-if="item.type=='window'" /></td>
                 <td><input style="width:35px" v-model.number="item.ff" @change="update" v-if="item.type=='window'" /></td>
-                <td><img src="icons/glyphicons-17-bin.png" class="icon" /></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFabricLibraryItem(key)" /></td>
+              </tr>
+              <tr>
+                <td><input v-model="tmp.new_element_type_name" style="width:120px" /></td>
+                <td><div style="cursor:pointer" @click="addFabricLibraryItem"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element Type</div></td>
               </tr>
             </table>
-            
             <br>
             <table>
               <tr>
@@ -171,10 +180,10 @@
                 </select></td>
                 <td>{{ element.uvalue }}</td>
                 <td>{{ element.wk | toFixed(1) }} <span class="unit">W/K</span></td>
-                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFloor(index)" /></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFabricElement(index)" /></td>
               </tr>
               <tr>
-              <td><div style="cursor:pointer" @click="addFloor"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element</div></td>
+              <td><div style="cursor:pointer" @click="addFabricElement"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element</div></td>
               </tr>
             </table>
           </div>
@@ -309,8 +318,12 @@
                 <td><input v-model.number="data.temperature.living_area" @change="update"> <span class="unit">m2</span></td>
               </tr>
               <tr>
-                <td>Heating hours off</td>
-                <td><input v-model.number="data.temperature.hours_off" @change="update"> <span class="unit"></span></td>
+                <td>Heating hours off weekday</td>
+                <td><input v-model="data.temperature.hours_off.weekday" @change="update_hoursoff"> <span class="unit"></span></td>
+              </tr>
+              <tr>
+                <td>Heating hours off weekend</td>
+                <td><input v-model="data.temperature.hours_off.weekend" @change="update_hoursoff"> <span class="unit"></span></td>
               </tr>
               <tr>
                 <td>Heating off during summer</td>
@@ -451,7 +464,7 @@
           <div class="room-elements hide" name="heatingsystems">
           <div v-for="(item,index) in data.heating_systems">
             <div style="padding:10px; border:1px solid #ccc">
-            <div style="float:right"><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFloor(index)" /></div>     
+            <div style="float:right"><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteHeatingSystem(index)" /></div>     
             <div class="heading">Heating system {{ index+1 }}</div>
 
             <table style="width:48%; float:left">
@@ -569,9 +582,8 @@
               </tr>
             </table>
             </div>
-            <br>
-            <div style="cursor:pointer" @click="addFloor"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Heating System</div>     
           </div>
+          <div style="cursor:pointer;" @click="addHeatingSystem"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Heating System</div>         
           </div>
         </div> 
 
@@ -584,7 +596,7 @@
             <table>
               <tr>
                 <th>Calculation type: </th>
-                <td style="width:33%"><select v-model="data.LAC_calculation_type">
+                <td style="width:33%"><select v-model="data.LAC_calculation_type" @change="update">
                   <option value="SAP">SAP</option>
                   <option value="detailedlist">Detailed appliance List</option>
                 </select></td>
@@ -606,7 +618,7 @@
                   <td>Reduced internal heat gains for lighting:</td>
                   <td><input type="checkbox" v-model="data.LAC.reduced_heat_gains_lighting" @change="update" style="width:auto"></td>
                 </tr>
-                <tr>
+                <tr v-if="data.energy_requirements.lighting">
                   <td>Annual energy use:</td>
                   <td>{{ data.energy_requirements.lighting.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
                 </tr>
@@ -634,8 +646,8 @@
                   <td>Energy efficient appliances and reduced internal heat gains:</td>
                   <td style="width:33%"><input type="checkbox" v-model="data.LAC.energy_efficient_appliances" @change="update" style="width:auto"></td>
                 </tr>
-                <tr>
-                  <td>Annual energy use:</td>
+                <tr v-if="data.energy_requirements.appliances">
+                  <td>>Annual energy use:</td>
                   <td>{{ data.energy_requirements.appliances.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
                 </tr>
               </table>
@@ -662,7 +674,7 @@
                   <td>Reduced internal heat gains for cooking:</td>
                   <td style="width:33%"><input type="checkbox" v-model="data.LAC.energy_efficient_cooking" @change="update" style="width:auto"></td>
                 </tr>
-                <tr>
+                <tr v-if="data.energy_requirements.cooking">
                   <td>Annual energy use:</td>
                   <td>{{ data.energy_requirements.cooking.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
                 </tr>      
@@ -685,7 +697,17 @@
             </div>
             <div v-if="data.LAC_calculation_type=='detailedlist'">
               <table>
-                <tr v-for="item in data.appliancelist.list">
+                <tr>
+                  <th>Category</th>
+                  <th>Name</th>
+                  <th>Power</th>
+                  <th>Hours</th>
+                  <th>kWh/d</th>
+                  <th>kWh/y</th>
+                  <th>Fuel</th>
+                  <th>Efficiency</th>
+                </tr>
+                <tr v-for="(item,index) in data.appliancelist.list">
                   <td>
                   <select v-model="item.category" @change="update">
                     <option value="lighting">Lighting</option>
@@ -701,8 +723,12 @@
                   <td><select v-model="item.fuel" @change="update">
                     <option v-for="(fuel,fuel_index) in data.fuels">{{ fuel_index }}</option>
                   </select></td>
-                  <td><input v-model.number="item.efficiency" @change="update" style="width:60px"></td>     
+                  <td><input v-model.number="item.efficiency" @change="update" style="width:60px"></td>  
+                  <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteLACitem(index)" /></td>                 
                 </tr>
+                <tr>
+                  <td><div style="cursor:pointer" @click="addLACitem"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add item</div></td>
+                </tr> 
               </table>
             </div>   
           </div>
