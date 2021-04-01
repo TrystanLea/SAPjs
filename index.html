@@ -29,8 +29,8 @@
         <!-- Location -->
         <!------------------------------------------------------------------------------------>
         <div class='section'>
-          <div class='section-heading' @click="toggleSection('location')"><b>Location</b></div>    
-          <div class="room-elements hide" name="location">
+          <div class='section-heading' @click="toggleSection('LDO')"><b>Location, Dimensions and Occupancy</b></div>    
+          <div class="room-elements hide" name="LDO">
             <table>
               <tr>
                 <td>Region</td>
@@ -45,15 +45,7 @@
                 <td style="width: 120px;"><input style="width: 60%" v-model.number="data.altitude" @change="update" /><span class="unit">m</span></td>
               </tr>
             </table>
-          </div>
-        </div>
-
-        <!------------------------------------------------------------------------------------>
-        <!-- Dimenstions -->
-        <!------------------------------------------------------------------------------------>
-        <div class='section'>
-          <div class='section-heading' @click="toggleSection('dimensions')"><b>Overall building dimensions</b></div>
-          <div class="room-elements hide" name="dimensions">
+            <br>
             <table>
               <tr>
                 <th>Name</th>
@@ -79,15 +71,7 @@
               <tr><td>Total floor area</td><td style="width: 120px;">{{ data.TFA | toFixed(1) }} <span class="unit">m2</span></td></tr>
               <tr><td>Total volume</td><td style="width: 120px;">{{ data.volume | toFixed(1) }} <span class="unit">m3</span></td></tr>
             </table>
-          </div>
-        </div>
-
-        <!------------------------------------------------------------------------------------>
-        <!-- Occupancy -->
-        <!------------------------------------------------------------------------------------>
-        <div class='section'>          
-          <div class='section-heading' @click="toggleSection('occupancy')"><b>Occupancy</b></div>    
-          <div class="room-elements hide" name="occupancy">
+            <br>
             <table>
               <tr>
                 <td>Floor area based occupancy</td>
@@ -105,7 +89,7 @@
               </tr>
             </table>
           </div>
-        </div> 
+        </div>
 
         <!------------------------------------------------------------------------------------>
         <!-- Fabric -->
@@ -118,11 +102,11 @@
               <tr>
                 <th>Element type</th>
                 <th>Category</th>
-                <th>U-value</th>
-                <th>K-value</th>
-                <th>g</th>
-                <th>gL</th>
-                <th title="Frame factor">ff</th>
+                <th title="Thermal transmittance (W/m2K)">U-value</th>
+                <th title="Heat capacity factor (kJ/m2.K) p138-140">K</th>
+                <th title="Window solar energy transmittance p162">g⊥</th>
+                <th title="Window light transmittance p162">gL</th>
+                <th title="Window frame factor p162">ff</th>
                 <th style="width:17px"></th>
               </tr>
               <tr v-for="(item,key) in data.fabric.library">
@@ -186,6 +170,46 @@
               <td><div style="cursor:pointer" @click="addFabricElement"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element</div></td>
               </tr>
             </table>
+            <br>
+            <div class="heading">Thermal Mass Parameter (TMP)</div>
+            <table>
+              <tr>
+                <td width="65%">Use global TMP value (ignore the k value of individual elements)</td>
+                <td><input type="checkbox" v-model="data.fabric.global_TMP" @change="update"></td>
+                <td v-if="data.fabric.global_TMP">
+                <select v-model="data.fabric.global_TMP_value">
+                  <option value="100">Low TMP</option>
+                  <option value="250">Medium TMP</option>
+                  <option value="450">High TMP</option>
+                </select>
+                </td>
+              </tr>
+            </table>
+            <br>
+            <div class="heading">Thermal Bridging</div>
+            <table>
+              <tr>
+                <td  width="65%">Total External Area</td>
+                <td>{{ data.fabric.total_external_area | toFixed(2) }} <span class="unit">m2</span></td>
+              </tr>
+              <tr>
+                <td>Thermal bridging heat loss factor (y) p76</td>
+                <td><input style="width:40px" v-model.number="data.fabric.thermal_bridging_yvalue" @change="update" /> <span class="unit">W/m2.K</span></td>
+              </tr>              
+              <tr>
+                <td>Thermal bridging heat loss</td>
+                <td>{{ data.fabric.thermal_bridging_heat_loss | toFixed(2) }} <span class="unit">W/K</span></td>
+              </tr>
+            </table>
+            <br>
+            <div class="heading">Totals</div>
+            <table>
+              <tr><td width="65%">Total fabric heat loss</td><td>{{ data.fabric.total_heat_loss_WK | toFixed(2) }} <span class="unit">W/K</span></td></tr>
+              <tr><td>Ventilation heat loss</td><td>{{ data.ventilation.average_WK | toFixed(2) }} <span class="unit">W/K</span></td></tr>
+              <tr><td>Total W/K heat loss</td><td>{{ data.totalWK | toFixed(2) }}</span> <span class="unit">W/K</span></td></tr>
+              <tr><td>Total fabric thermal capacity</td><td>{{ data.fabric.total_thermal_capacity | toFixed(2) }} <span class="unit">kJ/K.m3</span></td></tr>
+              <tr><td>Annual solar gains</td><td>{{ data.fabric.annual_solar_gain | toFixed(2) }} W ({{ data.fabric.annual_solar_gain_kwh | toFixed(2) }} <span class="unit">kWh</span>)</td></tr>
+            </table>    
           </div>
         </div>
 
@@ -252,7 +276,7 @@
               </tr>
             </div>
               
-            <table style="width:40%; margin-left:20px;  margin-top:20px; float:left">
+            <table style="width:40%; margin-left:20px;  margin-top:20px; float:left" v-if="data.ventilation.ventilation_type=='DEV' || data.ventilation.ventilation_type=='MV' || data.ventilation.ventilation_type=='MEV' || data.ventilation.ventilation_type=='MVHR'">
               <tr>
                 <td>System air change rate</td>
                 <td><input style="width:35px" v-model.number="data.ventilation.system_air_change_rate" @change="update" /> <span class="unit">AC/h</span></td>
@@ -265,11 +289,11 @@
             
             <div style="clear:both"></div>
             <br>
-            <b>IVF</b>
+            <div class="heading">Intentional vents and flues</div>
             <table>
               <tr>
                 <th>Name</th>
-                <th>Ventilation rate</th>
+                <th>Ventilation rate (p9)</th>
                 <th style="width:20px"></th>
               </tr>
               <tr v-for="(item,index) in data.ventilation.IVF">
@@ -281,24 +305,25 @@
               <td><div style="cursor:pointer" @click="addIVF"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add ventilation point</div></td>
               </tr>
             </table>
-            
-            <b>EVP</b>
-            <table>
-              <tr>
-                <th>Name</th>
-                <th>Ventilation rate</th>
-                <th style="width:20px"></th>
-              </tr>
-              <tr v-for="(item,index) in data.ventilation.EVP">
-                <td><input v-model="item.name" @change="update" /></td>
-                <td><input style="width:60px" v-model.number="item.ventilation_rate" @change="update" /> <span class="unit"></span></td>
-                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteEVP(index)" /></td>
-              </tr>
-              <tr>
-              <td><div style="cursor:pointer" @click="addEVP"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add ventilation point</div></td>
-              </tr>
-            </table>
-            
+            <div v-if="data.ventilation.ventilation_type=='NV' || data.ventilation.ventilation_type=='IE' || data.ventilation.ventilation_type=='PS'">
+              <br>
+              <div class="heading">Extract ventilation points</div>
+              <table>
+                <tr>
+                  <th>Name</th>
+                  <th>Ventilation rate (p9)</th>
+                  <th style="width:20px"></th>
+                </tr>
+                <tr v-for="(item,index) in data.ventilation.EVP">
+                  <td><input v-model="item.name" @change="update" /></td>
+                  <td><input style="width:60px" v-model.number="item.ventilation_rate" @change="update" /> <span class="unit"></span></td>
+                  <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteEVP(index)" /></td>
+                </tr>
+                <tr>
+                <td><div style="cursor:pointer" @click="addEVP"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add ventilation point</div></td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
         
@@ -338,7 +363,33 @@
                 </td>
               </tr>
             </table>
-            <p>Space heating energy requirement: {{ data.space_heating.annual_heating_demand | toFixed(0) }} kWh</p>
+            <br>
+            <div class="heading">Monthly temperatures</div>            
+            <table>
+              <tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Annual</th></tr>
+              <tr style="background-color:#ffeeed">
+                <td>Living area</td>
+                <td v-for="item in data.mean_internal_temperature.m_i_t_living_area">{{ item | toFixed(1) }} <span class="unit">°C</span></td>
+                <td>{{ data.annual_m_i_t_living_area | toFixed(1) }} <span class="unit">°C</span></td>                        
+              </tr>
+              <tr style="background-color:#fff5f2">
+                <td>Whole house</td>
+                <td v-for="item in data.internal_temperature">{{ item | toFixed(1) }} <span class="unit">°C</span></td>
+                <td>{{ data.annual_internal_temperature | toFixed(1) }} <span class="unit">°C</span></td>           
+              </tr>
+              <tr style="background-color:#f2f6ff">
+                <td>Outside</td>
+                <td v-for="item in data.external_temperature">{{ item | toFixed(1) }} <span class="unit">°C</span></td>
+                <td>{{ data.annual_external_temperature | toFixed(1) }} <span class="unit">°C</span></td>
+              </tr>
+              <tr>
+                <td>Heat demand</td>
+                <td v-for="item in data.space_heating.heat_demand_kwh">{{ item | toFixed(0) }} <span class="unit">kWh</span></td>
+                <td>{{ data.space_heating.annual_heating_demand | toFixed(0) }} <span class="unit">kWh</span></td>
+              </tr>
+            </table>
+            
+            <p>Space heating energy requirement: {{ data.space_heating.annual_heating_demand | toFixed(0) }} kWh</p>  
           </div>
         </div>
 
@@ -405,31 +456,31 @@
                   <td><input type="checkbox" v-model="data.water_heating.storage_type.declared_loss_factor_known" @change="update" style="width:auto"></td>
                 </tr> 
                 <tr v-if="data.water_heating.storage_type.declared_loss_factor_known">
-                  <td>Manufacturer loss factor</td>
+                  <td>Manufacturer loss factor (kWh/day)</td>
                   <td>
-                    <input v-model.number="data.water_heating.storage_type.manufacturer_loss_factor" @change="update">
+                    <input v-model.number="data.water_heating.storage_type.manufacturer_loss_factor" @change="update"><span class="unit">kWh/d</span>
                   </td>
                 </tr>
                 <tr v-if="data.water_heating.storage_type.declared_loss_factor_known">
-                  <td>Temperature factor A</td>
+                  <td>Temperature factor A (Table 2b, p139)</td>
                   <td>
                     <input v-model.number="data.water_heating.storage_type.temperature_factor_a" @change="update">
                   </td>
                 </tr>
                 <tr v-if="!data.water_heating.storage_type.declared_loss_factor_known">
-                  <td>Loss factor</td>
+                  <td>Loss factor (kWh/litre/day, Table 2, p138)</td>
                   <td>
                     <input v-model.number="data.water_heating.storage_type.loss_factor_b" @change="update">
                   </td>
                 </tr>
                 <tr v-if="!data.water_heating.storage_type.declared_loss_factor_known">
-                  <td>Volume factor</td>
+                  <td>Volume factor (Table 2a, p138)</td>
                   <td>
                     <input v-model.number="data.water_heating.storage_type.volume_factor_b" @change="update">
                   </td>
                 </tr>
                 <tr v-if="!data.water_heating.storage_type.declared_loss_factor_known">
-                  <td>Temperature factor</td>
+                  <td>Temperature factor (Table 2b, p139)</td>
                   <td>
                     <input v-model.number="data.water_heating.storage_type.temperature_factor_b" @change="update">
                   </td>
@@ -647,7 +698,7 @@
                   <td style="width:33%"><input type="checkbox" v-model="data.LAC.energy_efficient_appliances" @change="update" style="width:auto"></td>
                 </tr>
                 <tr v-if="data.energy_requirements.appliances">
-                  <td>>Annual energy use:</td>
+                  <td>Annual energy use:</td>
                   <td>{{ data.energy_requirements.appliances.quantity | toFixed(2) }} <span class="unit">kWh/year</span></td>
                 </tr>
               </table>
@@ -937,6 +988,17 @@
             </table>
           </div>
         </div> 
+        <!------------------------------------------------------------------------------------>
+        <!-- Monthly values -->
+        <!------------------------------------------------------------------------------------>
+        <!--
+        <div class='section'>
+          <div class='section-heading' @click="toggleSection('monthly_results')"><b>Monthly results</b></div>
+          <div class="room-elements" name="energy_and_fuels">
+          
+          </div>
+        </dvi>
+        -->
       </div>
     </div>
   </div>
