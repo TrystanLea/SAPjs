@@ -13,5 +13,7 @@ Minimal user interface for the OpenBEM SAP model using Vue.js
 2\. Clone my fork of the OpenBEM SAP model inside the SAPjs directory:
 
     cd SAPjs
-    git clone https://github.com/TrystanLea/OpenBEM
+    git clone https://github.com/TrystanLea/openBEM
+    
+ 3\. Thats it, open in browser via e.g: http://localhost/SAPjs
     
