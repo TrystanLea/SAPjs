@@ -2,7 +2,7 @@
 
 A minimal user interface for the OpenBEM SAP model using Vue.js
 
-Hello and welcome! This tool builds on previous work on a similar tool called [MyHomeEnergyPlanner](github.com/emoncms/MyHomeEnergyPlanner), both share the same core SAP model ([OpenBEM](github.com/trystanlea/openbem)). This tool is just a new user interface that focuses on input flexibility as well as pairing things right down to the basics. It is aimed at the enthusiast householder like myself who wants to do their own calculations and dig into the detail a bit more. To date this new user interface has been a personal project and while the tool is hosted at OpenEnergyMonitor I make no guarantees of ongoing support or regular development. It does the job for me and Im pretty happy with it, I hope you enjoy! If you would like to adapt or contribute back to this project please see the contributing section below. Cheers!
+Hello and welcome! This tool builds on previous work on a similar tool called [MyHomeEnergyPlanner](https://github.com/emoncms/MyHomeEnergyPlanner), both share the same core SAP model ([OpenBEM](https://github.com/trystanlea/Openbem)). This tool is just a new user interface that focuses on input flexibility as well as pairing things right down to the basics. It is aimed at the enthusiast householder like myself who wants to do their own calculations and dig into the detail a bit more. To date this new user interface has been a personal project and while the tool is hosted at OpenEnergyMonitor I make no guarantees of ongoing support or regular development. It does the job for me and Im pretty happy with it, I hope you enjoy! If you would like to adapt or contribute back to this project please see the contributing section below. Cheers!
 
 ![SAPjs.png](SAPjs.png)
 
