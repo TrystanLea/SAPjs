@@ -29,6 +29,8 @@ The OpenEnergyMonitor server is only used to initially load the tool.
 ### Background
 
 This tool builds on previous work on a similar tool called [MyHomeEnergyPlanner](https://github.com/emoncms/MyHomeEnergyPlanner), which started as a collaboration between OpenEnergyMonitor and CarbonCoop, both share the same core SAP model ([OpenBEM](https://github.com/trystanlea/Openbem)). This tool is just a new user interface that focuses on input flexibility as well as pairing things right down to the basics. It is aimed at the enthusiast householder who wants to do their own calculations and dig into the detail a bit more. To date this new user interface has been a personal project and while the tool is hosted at OpenEnergyMonitor I make no guarantees of ongoing support or regular development. It does the job for me and Im pretty happy with it, I hope you enjoy! If you would like to adapt or contribute back to this project please see the contributing section below. Cheers!
+
+Credit in particular to Carbon Coop: Marianne Heaslip, Carlos Alonso-Gabizon and Jonathan Atkinson for their support and development of the original MyHomeEnergyPlanner tool and work on the OpenBEM SAP model on which this user interface builds.
     
 ### Contributing 
 
