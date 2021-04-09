@@ -929,7 +929,7 @@
         <!-- Energy requirements and fuels -->
         <!------------------------------------------------------------------------------------>
         <div class='section'>
-          <div class='section-heading' @click="toggleSection('energy_and_fuels')"><b>Energy requirements and fuels</b></div>
+          <div class='section-heading' @click="toggleSection('energy_and_fuels')"><b>Energy requirements and fuel summary</b></div>
           <div class="room-elements" name="energy_and_fuels">
             <table>
               <tbody v-for="(item,index) in data.energy_requirements">
@@ -957,27 +957,33 @@
             
             <table>
               <tr>
-                <th style="width:120px">Fuel type</th>
-                <th>Fuel quantity</th>
+                <th style="width:90px">Fuel type</th>
+                <th style="width:80px">Fuel quantity</th>
                 <th>CO2 factor<br>kgCO2/kWh</th>
                 <th>Annual CO2</th>
                 <th>Primary Energy Factor</th>
                 <th>Primary Energy</th>
                 <th style="width:100px">Unit cost</th>    
                 <th>Annual standing charge</th>
-                <th>Annual cost</th>         
+                <th>Annual cost</th>
+                <th style="width:25px"></th>       
               </tr>
-              <tr v-for="(item,index) in data.fuel_totals">
-                <td>{{ item.name }}</td>
-                <td>{{ item.quantity | toFixed(2) }} <span class="unit">kWh</span></td>
-                <td><input v-model.number="data.fuels[index].co2factor" @change="update" style="width:50px" /></td>   
-                <td>{{ item.annualco2 | toFixed(2) }} <span class="unit">kg</span></td>
-                <td><input v-model.number="data.fuels[index].primaryenergyfactor" @change="update" style="width:50px" /></td>   
-                <td>{{ item.primaryenergy | toFixed(2) }} <span class="unit">kWh</span></td>
-                <td><input v-model.number="data.fuels[index].fuelcost" @change="update" style="width:50px" /> p/kWh</td>   
-                <td>£<input v-model.number="data.fuels[index].standingcharge" @change="update" style="width:30px; text-align:center" />/year</td>   
-                <td>£{{ item.annualcost | toFixed(2) }}</td>
+              <tr v-for="(item,index) in data.fuels">
+                <td>{{ index }}</td>
+                <td><span v-if="data.fuel_totals[index]">{{ data.fuel_totals[index].quantity | toFixed(2) }} <span class="unit">kWh</span></span></td>
+                <td><input v-model.number="item.co2factor" @change="update" style="width:50px" /></td>   
+                <td><span v-if="data.fuel_totals[index]">{{ data.fuel_totals[index].annualco2 | toFixed(2) }} <span class="unit">kg</span></span></td>
+                <td><input v-model.number="item.primaryenergyfactor" @change="update" style="width:50px" /></td>   
+                <td><span v-if="data.fuel_totals[index]">{{ data.fuel_totals[index].primaryenergy | toFixed(2) }} <span class="unit">kWh</span></span></td>
+                <td><input v-model.number="item.fuelcost" @change="update" style="width:50px" /> p/kWh</td>   
+                <td>£<input v-model.number="item.standingcharge" @change="update" style="width:30px; text-align:center" />/year</td>   
+                <td><span v-if="data.fuel_totals[index]">£{{ data.fuel_totals[index].annualcost | toFixed(2) }}</span></td>
+                <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFuel(index)" /></td>
               </tr>
+              <tr>
+              <td><input v-model="tmp.new_fuel_type_name" style="width:90px" /></td>
+              <td><div style="cursor:pointer" @click="addFuel"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Fuel</div></td>
+              </tr>        
             </table>
             
             <br>
@@ -999,6 +1005,7 @@
           </div>
         </dvi>
         -->
+        
       </div>
     </div>
   </div>

@@ -15,7 +15,8 @@ $.getJSON( "openBEM/example.json", function( result ) {
         data: data,
         datasets: datasets,
         tmp: {
-          new_element_type_name: ""
+          new_element_type_name: "",
+          new_fuel_type_name: ""
         }
       },
       // -------------------------------------------------------------
@@ -147,6 +148,30 @@ $.getJSON( "openBEM/example.json", function( result ) {
         },
         deleteLACitem: function (index) {
           this.data.appliancelist.list.splice(index,1)
+          this.update()
+        },
+        // -----------------------------------------------------------
+        // Add and remove fuel
+        // -----------------------------------------------------------
+        addFuel: function () {
+            data.fuels[this.tmp.new_fuel_type_name] = {
+                standingcharge: 0, 
+                fuelcost: 0.0, 
+                co2factor: 0.0, 
+                primaryenergyfactor: 1.0 
+            }
+            this.tmp.new_fuel_type_name = ""
+            this.update()
+        },
+        deleteFuel: function (index) {
+          // Check if fuel is in use
+          for (var z in data.fuel_totals) {
+             if (data.fuel_totals[z].name==index) {
+               alert("Fuel is in use, cannot remove");
+               return false;
+             }
+          }
+          delete data.fuels[index]
           this.update()
         },
         toggleSection: function (roomName) {
