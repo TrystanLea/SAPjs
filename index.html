@@ -11,7 +11,7 @@
   <div class="page">
     <div class='section'>
       <div class='section-heading'>
-        <b>SAP Calculation</b>
+        <b>SAPjs</b>
         <button class="btn save">Save</button>
         <button class="btn open" onclick="document.getElementById('open').click()">Open</button>
         <input type="file" id="open" style="display:none" accept="application/json"/>
@@ -167,7 +167,7 @@
                 <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFabricElement(index)" /></td>
               </tr>
               <tr>
-              <td><div style="cursor:pointer" @click="addFabricElement"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element</div></td>
+              <td><div style="cursor:pointer" @click="addFabricElement" v-if="Object.keys(data.fabric.library).length>0"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element</div></td>
               </tr>
             </table>
             <br>

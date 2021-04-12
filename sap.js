@@ -51,10 +51,10 @@ $.getJSON( "openBEM/example.json", function( result ) {
         // Fabric
         // -----------------------------------------------------------
         addFabricLibraryItem: function() {
-            var i = 0;
-            for (last in data.fabric.library) {i++;}
-            if (i>0) {
-                next = JSON.parse(JSON.stringify(data.fabric.library[last]))
+            
+            var keys = Object.keys(data.fabric.library);
+            if (keys.length) {
+                next = JSON.parse(JSON.stringify(data.fabric.library[keys[keys.length-1]]))
             } else {
                 next = {"type":"wall", "uvalue":0.3, "kvalue":75}
             }
@@ -70,10 +70,14 @@ $.getJSON( "openBEM/example.json", function( result ) {
           if (this.data.fabric.elements.length) {
               next = JSON.parse(JSON.stringify(this.data.fabric.elements[this.data.fabric.elements.length-1]))
               next.id += " (copy)"
+              this.data.fabric.elements.push(next)
           } else {
-              next = {"id":"", "lib":"", "l":0, "h":0 }
+              var keys = Object.keys(data.fabric.library);
+              if (keys.length) {
+                  next = {"id":"", "lib":keys[0], "l":0, "h":0 }
+                  this.data.fabric.elements.push(next)
+              }
           }
-          this.data.fabric.elements.push(next)
           this.update()
         },
         deleteFabricElement: function(index) {
