@@ -362,24 +362,47 @@
                   <input type="checkbox" v-model="data.space_heating.use_utilfactor_forgains" @change="update" style="width:auto">
                 </td>
               </tr>
+              <tr>
+                <td>Enter custom monthly internal temperature values:</td>
+                <td>
+                  <input type="checkbox" v-model="data.use_custom_internal_temperature" @change="update" style="width:auto">
+                </td>
+              </tr>
+              <tr>
+                <td>Enter custom monthly external temperature values:</td>
+                <td>
+                  <input type="checkbox" v-model="data.use_custom_external_temperature" @change="update" style="width:auto">
+                </td>
+              </tr>
             </table>
             <br>
-            <div class="heading">Monthly temperatures</div>            
+            <div class="heading">Monthly temperatures</div>
+                        
             <table>
-              <tr><th></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Annual</th></tr>
-              <tr style="background-color:#ffeeed">
+              <tr><th style="width:100px"></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Annual</th></tr>
+              <tr style="background-color:#ffeeed" v-if="!data.use_custom_internal_temperature">
                 <td>Living area</td>
                 <td v-for="item in data.mean_internal_temperature.m_i_t_living_area">{{ item | toFixed(1) }} <span class="unit">°C</span></td>
                 <td>{{ data.annual_m_i_t_living_area | toFixed(1) }} <span class="unit">°C</span></td>                        
               </tr>
-              <tr style="background-color:#fff5f2">
+              <tr style="background-color:#fff5f2" v-if="!data.use_custom_internal_temperature">
                 <td>Whole house</td>
                 <td v-for="item in data.internal_temperature">{{ item | toFixed(1) }} <span class="unit">°C</span></td>
                 <td>{{ data.annual_internal_temperature | toFixed(1) }} <span class="unit">°C</span></td>           
               </tr>
-              <tr style="background-color:#f2f6ff">
+              <tr style="background-color:#ffeeed" v-else>
+                <td>Whole house</td>
+                <td v-for="(item,m) in data.custom_internal_temperature"><input type="text" v-model:value="data.custom_internal_temperature[m]" @change="update" style="width:85%"/></td>
+                <td>{{ data.annual_internal_temperature | toFixed(1) }} <span class="unit">°C</span></td>           
+              </tr>
+              <tr style="background-color:#f2f6ff" v-if="!data.use_custom_external_temperature">
                 <td>Outside</td>
                 <td v-for="item in data.external_temperature">{{ item | toFixed(1) }} <span class="unit">°C</span></td>
+                <td>{{ data.annual_external_temperature | toFixed(1) }} <span class="unit">°C</span></td>
+              </tr>
+              <tr style="background-color:#f2f6ff" v-else>
+                <td>Outside</td>
+                <td v-for="(item,m) in data.custom_external_temperature"><input type="text" v-model:value="data.custom_external_temperature[m]" @change="update" style="width:85%"/></td>
                 <td>{{ data.annual_external_temperature | toFixed(1) }} <span class="unit">°C</span></td>
               </tr>
               <tr>
