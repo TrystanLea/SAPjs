@@ -40,7 +40,7 @@ Feel free to fork this project and adapt to your own requirements, the work is l
 
 If you would like to contribute back to the project please get in contact via the github issues to introduce yourself and discuss proposed changes before creating a pull request, that's if they are more than fixing typos and very small errors :)
 
-A key goal for this project is to keep things simple and focus on input flexibility for the enthusiast user. I'm trying to avoid adding complexity such as libraries and backend systems for saving and managing projects and don't envison changing this tool much beyond it's present form.
+A key goal for this project is to keep things simple and focus on input flexibility for the enthusiast user.
 
 The following contributing guide for normalize css is a great overview of how to contribute to an open source project and how to use git to create pull requests among other things.
 
