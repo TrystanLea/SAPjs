@@ -1,7 +1,7 @@
 var data = {};
 var app = false;
 
-$.getJSON( "openBEM/example.json?v=2", function( result ) {
+$.getJSON( "openBEM/example.json?v=3", function( result ) {
 
     data = result
     data = calc.run(data)
@@ -197,7 +197,7 @@ $.getJSON( "openBEM/example.json?v=2", function( result ) {
     });
 
     $.ajax({
-        url: 'topgraphic/topgraphic.html?v=2',
+        url: 'topgraphic/topgraphic.html?v=3',
         cache: true,
         success: function(result) {
             $('#topgraphic').html(result);
@@ -215,7 +215,7 @@ $("#open").change(function(e){
 });
 
 $(".new").click(function(e){
-    $.getJSON( "openBEM/blank.json?v=2", function( result ) {
+    $.getJSON( "openBEM/blank.json?v=3", function( result ) {
         result = calc.run(result)
         app.data = Object.assign(app.data,result) 
         app.update()
