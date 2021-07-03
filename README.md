@@ -13,6 +13,10 @@ SAPjs is installed on the OpenEnergyMonitor server for public use here:
 Save and open projects to your computer locally. Data is not stored on the OpenEnergyMonitor server, all calculations happen in your computer browser.
 The OpenEnergyMonitor server is only used to initially load the tool.
 
+### Assessment example
+
+[https://trystanlea.org.uk/energyassessment](https://trystanlea.org.uk/energyassessment)
+
 ### Self host or install locally
 
 1\. Clone this repository into your public_html folder (assuming installed apache2 server):
