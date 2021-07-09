@@ -3,7 +3,7 @@
 <script type="text/javascript" src="openBEM/datasets.js?v=3"></script>
 <script type="text/javascript" src="openBEM/openBEM.js?v=3"></script>
 <script type="text/javascript" src="topgraphic/topgraphic.js?v=3"></script>
-<link rel="stylesheet" type="text/css" href="style.css?v=3" />
+<link rel="stylesheet" type="text/css" href="style.css?v=4" />
 
 <html lang="en">
 <meta charset="utf-8">
@@ -124,14 +124,14 @@
                 <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFabricLibraryItem(key)" /></td>
               </tr>
               <tr>
-                <td><input v-model="tmp.new_element_type_name" style="width:120px" /></td>
+                <td><input v-model="tmp.new_element_type_name" style="width:120px" placeholder="Element type..." /></td>
                 <td><div style="cursor:pointer" @click="addFabricLibraryItem"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Element Type</div></td>
               </tr>
             </table>
             <br>
             <table>
               <tr>
-                <th>ID</th>
+                <th style="width:0">ID</th>
                 <th>Type</th>
                 <th>Length</th>
                 <th>Height</th>
@@ -342,20 +342,20 @@
           <div class="room-elements hide" name="Temperature">
             <table>
               <tr>
-                <td>Target temperature</td>
-                <td><input v-model.number="data.temperature.target" @change="update"> <span class="unit">C</span></td>
+                <td style="width:50%">Target temperature</td>
+                <td><input v-model.number="data.temperature.target" @change="update" style="width:50px"> <span class="unit">C</span></td>
               </tr>
               <tr>
                 <td>Living area</td>
-                <td><input v-model.number="data.temperature.living_area" @change="update"> <span class="unit">m2</span></td>
+                <td><input v-model.number="data.temperature.living_area" @change="update" style="width:50px"> <span class="unit">m2</span></td>
               </tr>
               <tr>
                 <td>Heating hours off weekday</td>
-                <td><input v-model="data.temperature.hours_off.weekday" @change="update_hoursoff"> <span class="unit"></span></td>
+                <td><input v-model="data.temperature.hours_off.weekday" @change="update_hoursoff" style="width:50px"> <span class="unit"></span></td>
               </tr>
               <tr>
                 <td>Heating hours off weekend</td>
-                <td><input v-model="data.temperature.hours_off.weekend" @change="update_hoursoff"> <span class="unit"></span></td>
+                <td><input v-model="data.temperature.hours_off.weekend" @change="update_hoursoff" style="width:50px"> <span class="unit"></span></td>
               </tr>
               <tr>
                 <td>Heating off during summer</td>
@@ -1006,12 +1006,12 @@
                 <td><input v-model.number="item.primaryenergyfactor" @change="update" style="width:50px" /></td>   
                 <td><span v-if="data.fuel_totals[index]">{{ data.fuel_totals[index].primaryenergy | toFixed(2) }} <span class="unit">kWh</span></span></td>
                 <td><input v-model.number="item.fuelcost" @change="update" style="width:50px" /> p/kWh</td>   
-                <td>£<input v-model.number="item.standingcharge" @change="update" style="width:30px; text-align:center" />/year</td>   
+                <td>£<input v-model.number="item.standingcharge" @change="update" style="width:45px; text-align:center" />/year</td>   
                 <td><span v-if="data.fuel_totals[index]">£{{ data.fuel_totals[index].annualcost | toFixed(2) }}</span></td>
                 <td><img src="icons/glyphicons-17-bin.png" class="icon" @click="deleteFuel(index)" /></td>
               </tr>
               <tr>
-              <td><input v-model="tmp.new_fuel_type_name" style="width:90px" /></td>
+              <td><input v-model="tmp.new_fuel_type_name" style="width:90px" placeholder="Fuel name..." /></td>
               <td><div style="cursor:pointer" @click="addFuel"><img src="icons/glyphicons-191-plus-sign.png" class="icon" />Add Fuel</div></td>
               </tr>        
             </table>
