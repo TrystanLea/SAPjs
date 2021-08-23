@@ -1,0 +1,102 @@
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<h2>Convert heatloss.js export to SAP.js data</h2>
+
+<p>Paste heatloss.js export:</p>
+<textarea id="heatlossjs-data" style="width:800px; height:300px">
+</textarea>
+<br><br>
+
+<button id="convert">Convert</button>
+
+<br><br>
+<p>SAP.js data:</p>
+<textarea id="sapjs-data" style="width:800px; height:300px">
+</textarea>
+
+<script>
+var sap = {};
+$.getJSON( "openBEM/blank.json?v=1", function( result ) {
+    sap = result;
+    
+    $("#sapjs-data").html(JSON.stringify(sap, null, 2))
+    
+});
+
+$("#convert").click(function(){ 
+
+    var heatlossjsdata = JSON.parse($("#heatlossjs-data").val());
+    
+    sap.fabric.library = {}
+    
+    for (var name in heatlossjsdata.element_type) {
+
+        if (name.toLowerCase().includes("loft")) {
+            sap.fabric.library[name] = {
+                type: "loft",
+                uvalue: heatlossjsdata.element_type[name].uvalue,
+                kvalue: 50 
+            }
+        }
+        else if (name.toLowerCase().includes("floor")) {
+            sap.fabric.library[name] = {
+                type: "floor",
+                uvalue: heatlossjsdata.element_type[name].uvalue,
+                kvalue: 110 
+            }
+        }
+        else if (name.toLowerCase().includes("wall")) {
+            sap.fabric.library[name] = {
+                type: "wall",
+                uvalue: heatlossjsdata.element_type[name].uvalue,
+                kvalue: 150 
+            }
+        }
+        else if (name.toLowerCase().includes("glazing") || name.toLowerCase().includes("window") || name.toLowerCase().includes("door")) {
+            sap.fabric.library[name] = {
+                type: "window",
+                uvalue: heatlossjsdata.element_type[name].uvalue,
+                kvalue: 0,
+                g: 0.76,
+                gL: 0.8,
+                ff: 0.7
+            }
+        }
+        else {
+            sap.fabric.library[name] = {
+                type: "wall",
+                uvalue: heatlossjsdata.element_type[name].uvalue,
+                kvalue: 150 
+            }
+        }
+    }
+    
+    var id = 1;
+
+    for (var room in heatlossjsdata.rooms) {
+        for (var elementIndex in heatlossjsdata.rooms[room].elements) {
+            var element = heatlossjsdata.rooms[room].elements[elementIndex];
+        
+            if (element.boundary=="external" || element.boundary=="ground" || element.boundary=="unheated") {
+                sap.fabric.elements.push({
+                    "id": ucfirst(room)+" "+element.orientation+" e"+elementIndex,
+                    "lib": element.type,
+                    "l": element.width,
+                    "h": element.height
+                });
+            }
+            id ++;
+        }
+    }
+
+    
+    $("#sapjs-data").html(JSON.stringify(sap, null, 2))
+
+});
+
+function ucfirst(s)
+{
+    return s && s[0].toUpperCase() + s.slice(1);
+}
+
+</script>
