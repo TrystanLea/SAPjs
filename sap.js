@@ -207,7 +207,14 @@ $.getJSON( "openBEM/example.json?v=3", function( result ) {
 });
 
 $(".save").click(function(){
-    download_data("sap_export.json",JSON.stringify(app.data, null, 2))
+    var date = new Date();
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var h = date.getHours();
+    if (h<10) h = "0"+h;
+    var m = date.getMinutes();
+    if (m<10) m = "0"+m; 
+    var datestr = date.getDate()+months[date.getMonth()]+h+m
+    download_data("sapjs_"+datestr+".json",JSON.stringify(app.data, null, 2))
 });
 
 $("#open").change(function(e){
