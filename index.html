@@ -33,6 +33,10 @@
         <div class='section'>
           <div class='section-heading' @click="toggleSection('LDO')"><b>Location, Dimensions and Occupancy</b></div>    
           <div class="room-elements hide" name="LDO">
+
+            <table style="margin-bottom: 5px;">
+              <tr><td>Project Name</td><td><input type="text" v-model="data.project_name" ></td></tr>
+            </table>   
             <table>
               <tr>
                 <td>Region</td>
@@ -90,8 +94,10 @@
                 <td style="width: 120px;"><input style="width:35px" v-model.number="data.custom_occupancy" @change="update" /><span class="unit">people</span></td>
               </tr>
             </table>
-          </div>
+          </div>       
         </div>
+
+
 
         <!------------------------------------------------------------------------------------>
         <!-- Fabric -->

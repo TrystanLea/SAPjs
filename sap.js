@@ -1,10 +1,12 @@
 var data = {};
 var app = false;
 
-$.getJSON( "openBEM/example.json?v=3", function( result ) {
+$.getJSON( "openBEM/example.json?v=4", function( result ) {
 
     data = result
     data = calc.run(data)
+    
+    if (data.project_name==undefined) data.project_name = "myproject";
     
     // ---------------------------------------------------------------
     // Vue App
@@ -214,7 +216,7 @@ $(".save").click(function(){
     var m = date.getMinutes();
     if (m<10) m = "0"+m; 
     var datestr = date.getDate()+months[date.getMonth()]+h+m
-    download_data("sapjs_"+datestr+".json",JSON.stringify(app.data, null, 2))
+    download_data("sapjs_"+app.data.project_name+"_"+datestr+".json",JSON.stringify(app.data, null, 2))
 });
 
 $("#open").change(function(e){
