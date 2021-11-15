@@ -61,6 +61,9 @@ function convert_heatlossjs_to_sapjs(heatlossjsdata,callback) {
         }
         
         var id = 1;
+        
+        var total_floor_area = 0;
+        var total_volume = 0;
 
         for (var room in heatlossjsdata.rooms) {
             for (var elementIndex in heatlossjsdata.rooms[room].elements) {
@@ -78,7 +81,18 @@ function convert_heatlossjs_to_sapjs(heatlossjsdata,callback) {
                 }
                 id ++;
             }
+            
+            total_floor_area += room.area;
+            total_volume += room.volume;
         }
+        
+        sap.floors = [
+            {
+              "name": "Combined floor",
+              "area": total_floor_area,
+              "height": 1*(total_volume / total_floor_area).toFixed(2)
+            }
+        ];
         
         // Populate a default heating system
         sap.heating_systems = [
