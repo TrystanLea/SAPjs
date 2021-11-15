@@ -61,7 +61,7 @@
                 <th style="width:20px"></th>
               </tr>
               <tr v-for="(floor,index) in data.floors">
-                <td>{{ floor.name }}</td>
+                <td><input style="width:200px" v-model="floor.name" @change="update" /> </td>             
                 <td><input style="width:60px" v-model.number="floor.area" @change="update" /> <span class="unit">m2</span></td>
                 <td><input style="width:60px" v-model.number="floor.height" @change="update" /> <span class="unit">m</span></td>
                 <td>{{ floor.volume | toFixed(1) }} <span class="unit">m3</span></td>
