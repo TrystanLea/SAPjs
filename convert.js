@@ -82,8 +82,8 @@ function convert_heatlossjs_to_sapjs(heatlossjsdata,callback) {
                 id ++;
             }
             
-            total_floor_area += room.area;
-            total_volume += room.volume;
+            total_floor_area += heatlossjsdata.rooms[room].area;
+            total_volume += heatlossjsdata.rooms[room].volume;
         }
         
         sap.floors = [
