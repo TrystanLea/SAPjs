@@ -14,7 +14,7 @@ if (window.location.search=="?load=heatlossjs") {
 
 function convert_heatlossjs_to_sapjs(heatlossjsdata,callback) {
 
-    $.getJSON( "openBEM/blank.json?v=1", function( result ) {
+    $.getJSON( "openBEM/blank.json?v=2", function( result ) {
         var sap = result;
         sap.fabric.library = {}
         
@@ -79,6 +79,31 @@ function convert_heatlossjs_to_sapjs(heatlossjsdata,callback) {
                 id ++;
             }
         }
+        
+        // Populate a default heating system
+        sap.heating_systems = [
+            {
+                "name": "Heat pump",
+                "provides": "heating_and_water",
+                "instantaneous_water_heating": false,
+                "main_space_heating_system": "mainHS1",
+                "fraction_water_heating": 1,
+                "fraction_space": 1,
+                "summer_efficiency": 350,
+                "winter_efficiency": 400,
+                "fuel": "Electricity",
+                "responsiveness": 1,
+                "heating_controls": 2,
+                "temperature_adjustment": 0,
+                "primary_circuit_loss": true,
+                "central_heating_pump": 0,
+                "central_heating_pump_inside": true,
+                "warm_air_system": false,
+                "fans_and_supply_pumps": 0,
+                "sfp": 0,
+                "combi_loss": 0
+            }
+        ];  
         
         callback(sap);
     });

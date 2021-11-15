@@ -224,7 +224,7 @@ $("#open").change(function(e){
 });
 
 $(".new").click(function(e){
-    $.getJSON( "openBEM/blank.json?v=4", function( result ) {
+    $.getJSON( "openBEM/blank.json?v=5", function( result ) {
         result = calc.run(result)
         app.data = Object.assign(app.data,result) 
         app.update()
