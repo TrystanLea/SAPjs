@@ -876,6 +876,17 @@
                 </select></td>
               </tr>
             </table>
+
+            <p><b>Monthly solar energy available</b></p>
+            <table>
+              <tr><th style="width:100px"></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th></tr>
+              <tr>
+                <td>Monthly output</td>
+                <td v-for="item in data.SHW.monthly_solar_energy_available">{{ item | toFixed(0) }} <span class="unit">kWh</span></td>
+              </tr>
+            </table>
+            
+            
             <p><b>Note:</b> The overall performance of solar water systems depends on how the hot water system is used, e.g. daily draw-off patterns and the use of other water heating devices such as a boiler or an immersion. The procedure described here is not suitable for detailed design in a particular case. It is intended to give a representative value of the solar contribution to domestic water heating over a range of users.</p>
             <table> 
               <tr>
