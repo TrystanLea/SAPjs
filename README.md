@@ -53,4 +53,4 @@ https://github.com/necolas/normalize.css/blob/master/CONTRIBUTING.md
 ### Notable Forks (Other people doing good things with this project)
 
 - Julian Todd (@goatchurchprime) MQTT interface to enable integration with a mobile VR interface for laser scanning!
-Please see github issue here: https://github.com/goatchurchprime/SAPjs/tree/incoming-mqtt-api
+Please see github issue here: https://github.com/goatchurchprime/SAPjs/tree/incoming-mqtt-api and fork here: https://github.com/goatchurchprime/SAPjs/tree/incoming-mqtt-api
