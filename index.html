@@ -1,7 +1,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script type="text/javascript" src="openBEM/datasets.js?v=3"></script>
-<script type="text/javascript" src="openBEM/openBEM.js?v=3"></script>
+<script type="text/javascript" src="openBEM/openBEM.js?v=4"></script>
 <script type="text/javascript" src="topgraphic/topgraphic.js?v=3"></script>
 <link rel="stylesheet" type="text/css" href="style.css?v=4" />
 
@@ -240,8 +240,8 @@
                 <td>Dwelling construction</td>
                 <td>
                   <select v-model="data.ventilation.dwelling_construction" @change="update">
-                    <option value="masonry">Masonry</option>
-                    <option value="timberframe">Timber frame</option>
+                    <option value="masonry">Masonry (+0.35 ACH)</option>
+                    <option value="timberframe">Timber frame (+0.25 ACH)</option>
                   </select>
                 </td>
               </tr>
@@ -250,8 +250,8 @@
                 <td>
                   <select v-model="data.ventilation.suspended_wooden_floor" @change="update">
                     <option value="0">n/a</option>
-                    <option value="sealed">Sealed</option>
-                    <option value="unsealed">Unsealed</option>
+                    <option value="sealed">Sealed (+0.1 ACH)</option>
+                    <option value="unsealed">Unsealed (0.2 ACH)</option>
                   </select>
                 </td>
               </tr>
@@ -266,9 +266,14 @@
                 <td><input style="width:35px" v-model.number="data.ventilation.percentage_draught_proofed" @change="update" /> <span class="unit">%</span></td>
               </tr>
               <tr>
+                <td>Structural infiltration</td>
+                <td>{{ data.ventilation.structural_infiltration | toFixed(2) }} <span class="unit">ACH</span></td>
+              </tr>  
+              <tr>
                 <td>Number of sides sheltered</td>
                 <td><input style="width:35px" v-model.number="data.ventilation.number_of_sides_sheltered" @change="update" /> <span class="unit">sides</span></td>
               </tr>
+              <tr><td>Shelter factor:</td><td>{{ data.ventilation.shelter_factor | toFixed(3) }}</td></tr>
             </table>
             
             <table style="width:40%; margin-left:20px; float:left">
@@ -337,6 +342,32 @@
                 </tr>
               </table>
             </div>
+            
+            <br>
+            
+            <table>
+              <tr><td>Infiltration rate:</td><td>{{ data.ventilation.infiltration_rate | toFixed(2) }} <span class="unit">ACH</span></td></tr>
+              <tr><td>Infiltration rate incorporating shelter factor:</td><td>{{ data.ventilation.infiltration_rate_incorp_shelter_factor | toFixed(2) }} <span class="unit">ACH</span></td></tr>
+            </table>
+            
+            
+            
+            
+            <br>
+            <div class="heading">Wind modified (ACH x wind speed / 4.0)</div>
+                        
+            <table>
+              <tr><th style="width:100px"></th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th>Annual</th></tr>
+              <tr>
+                <td>Wind speeds</td>
+                <td v-for="item in data.ventilation.wind_speeds">{{ item | toFixed(2) }} <span class="unit">m/s</span></td>
+              </tr>
+              <tr>
+                <td>Effective air change rate</td>
+                <td v-for="item in data.ventilation.effective_air_change_rate">{{ item | toFixed(2) }} <span class="unit">ACH</span></td>
+              </tr>
+            </table>
+            
           </div>
         </div>
         
@@ -1069,6 +1100,6 @@
   </div>
 </body>
 </html>
-<script type="text/javascript" src="sap.js?v=5"></script>
+<script type="text/javascript" src="sap.js?v=6"></script>
 
 <script type="text/javascript" src="convert.js?v=4"></script>
