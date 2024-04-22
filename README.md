@@ -50,4 +50,7 @@ The following contributing guide for normalize css is a great overview of how to
 
 https://github.com/necolas/normalize.css/blob/master/CONTRIBUTING.md
 
+### Other people doing good things with this project
 
+- Julian Todd (@goatchurchprime) MQTT interface to enable integration with a mobile VR interface for laser scanning!
+Please see github issue here: https://github.com/goatchurchprime/SAPjs/tree/incoming-mqtt-api and fork here: https://github.com/goatchurchprime/SAPjs/tree/incoming-mqtt-api
